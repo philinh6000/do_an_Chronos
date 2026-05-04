@@ -4,17 +4,27 @@
 #include <algorithm>
 #include <vector>
 
-/*time_t t = time(0); // Lấy thời gian hiện tại (now)
-struct tm* now = localtime(&t); // Chuyển thời gian về dạng dd/mm/yyyy*/
-
 // Nhập tên task và thời gian deadline
 void Task::input(){
     int d, m, y, hr, min;
     // Nhập tên task
+    std::cout<<"Nhap ten task bang chu khong dau: ";
     std::getline(std::cin, task_name);
     // Nhập time
-    std::cin>>d>>m>>y>>hr>>min;
+    std::cout<<"Nhap ngay ket thuc: ";
+    std::cin>>d;
+    std::cout<<"Nhap thang ket thuc: ";
+    std::cin>>m;
+    std::cout<<"Nhap nam ket thuc: ";
+    std::cin>>y;
+    std::cout<<"Nhap gio ket thuc: ";
+    std::cin>>hr;
+    std::cout<<"Nhap phut ket thuc: ";
+    std::cin>>min;
     std::cin.ignore();
+
+    // Xử lý năm sai định dạng:
+    if (y < 100) y += 2000; // Nếu < 100 thì thêm 2000. VD: 26 + 2000 = 2026
 
     // Chuyển đổi thời gian từ số nguyên thành giờ
     struct tm t = {0};
@@ -25,6 +35,12 @@ void Task::input(){
     t.tm_min = min;
 
     deadline = mktime(&t); // Lấy được thời gian deadline
+
+    time_t now = time(0); // Lấy thời gian hiện tại
+    if (deadline < now) { // So sánh nếu deadline < now
+        std::cout << "[ERROR] Deadline nho ngay hien tai! Luu task that bai!\n";
+        deadline = -1; // đánh dấu không hợp lệ
+    }
 }
 
 // Đặt điều kiện so sánh nếu deadline < hơn.
@@ -65,4 +81,9 @@ void Task::output() const{
     <<(thoigian->tm_year+1900)<<" " // Tương tự, ngược lại lúc chuyển qua giây
     <<thoigian->tm_hour<<":"
     <<thoigian->tm_min<<"\n";
+}
+
+void Task::setFakeData(int i){
+    task_name = i; // task name = số thứ tự
+    deadline = time(0) + (i*3600); // deadline lấy hiện tại + 1hr mỗi lần tạo
 }

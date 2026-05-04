@@ -10,7 +10,9 @@ class Task{
         time_t deadline; 
     public:
         void input(); // Nhập ngày
+        bool isValid() const {return deadline != -1;} // Thêm bool đánh dấu deadline < now
         bool operator <(const Task& other) const; // so sánh priority theo thời gian
         Task& operator++(); // Gia hạn thêm 1 ngày
         void output() const; // Hiển thị 1 task
+        void setFakeData(int i); // Tạo data giả để test
 };

@@ -9,6 +9,7 @@ void Project::priority(){
 
 // 2. Hiển thị, chỉ xem.
 void Project::display() const{
+    std::cout<<"TASKLIST\n";
     for (int i = 0; i < (int)ds.size(); i++){
         std::cout<<i<<". ";
         ds[i].output();
@@ -17,27 +18,35 @@ void Project::display() const{
 
 // 1. Thêm task
 void Project::add_task(){
-    history.push(ds); // Lưu trạng thái hiện tạo vào stack
     Task t; // gọi task được thêm vào là t
     t.input(); // Gọi hàm input để nhập tên task và deadline
-    ds.push_back(t); // thêm toàn bộ t vừa nhập vào danh sách vector bằng push_back
-    priority(); // sắp xếp lại danh sách theo độ ưu tiên
-    display(); // Hiển thị lại
+    // Nếu t != -1 = isvalid
+    // thêm toàn bộ t vừa nhập vào danh sách vector bằng push_back
+    if (t.isValid()) {
+        ds.push_back(t);
+        priority(); // sắp xếp lại danh sách theo độ ưu tiên
+        history.push(ds); // Lưu trạng thái hiện tại vào stack
+    }
+    display(); // Hiển thị lại danh sách sau khi thêm dù thành công hay không
 }
 
 // 3. Gia hạn
 void Project::gia_han(int vi_tri){
-    history.push(ds); // Lưu trạng thái trước
-    ++ds[vi_tri]; // gia hạn ở vị trí được chọn
-    display(); 
+    if (vi_tri >=0 && vi_tri < (int)ds.size()){
+        ++ds[vi_tri]; // gia hạn ở vị trí được chọn
+        history.push(ds); // Lưu trạng thái mới
+        display(); // Hiển thị lại danh sách sau khi gia hạn
+    }else std::cout<<"Vi tri khong ton tai!!";
 }
 
 // 4. Xóa
 void Project::deleted(int vi_tri){
-    history.push(ds); // Lưu trạng thái
     // chọn vị trí trong menu, xóa task ở vị trí được chọn.
-    if (vi_tri >= 0 && vi_tri < (int)ds.size()) ds.erase(ds.begin() + vi_tri);
-    display(); // Hiển thị
+    if (vi_tri >= 0 && vi_tri < (int)ds.size()) {
+        ds.erase(ds.begin() + vi_tri);
+        history.push(ds); // Lưu trạng thái
+        display(); // Hiển thị lại danh sách sau khi xóa
+    }else std::cout<<"Vi tri khong ton tai!!";
 }
 
 // 5. Hoàn tác
@@ -59,4 +68,14 @@ void Project::undo(){
         // => Lần sau hoàn tác tiếp thì sẽ lại đến vị trí tiếp theo
         display(); // Hiển thị danh sách sau khi undo
     }else std::cout<<"Không có gì để hoàn tác!!";
+}
+
+void Project::demoOverflow(){
+    std::cout<<"Test 10000 task";
+    for (int i = 0; i < 10000; i++){
+        Task t;
+        t.setFakeData(i);
+        ds.push_back(t);
+    }
+    display();
 }
