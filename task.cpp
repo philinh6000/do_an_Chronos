@@ -1,3 +1,4 @@
+// task.cpp
 #include "task.h"
 #include <iostream>
 #include <string>
@@ -84,6 +85,20 @@ void Task::output() const{
 }
 
 void Task::setFakeData(int i){
-    task_name = i; // task name = số thứ tự
+    task_name = "Task thu " + std::to_string(i); // task name = số thứ tự
     deadline = time(0) + (i*3600); // deadline lấy hiện tại + 1hr mỗi lần tạo
+}
+
+// Lấy deadline và task name để dùng ở nhiều tính năng
+int Task::getDeadline() const{
+    return deadline;
+}
+
+std::string Task::getTaksName() const{
+    return task_name;
+}
+
+void Task::setDataChuan(std::string name, time_t dl){
+    task_name = name; // Lấy task_name = thông tin string mới
+    deadline = dl; // Lấy deadline = thông tin time mới
 }
