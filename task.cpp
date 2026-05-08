@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <vector>
 
+
 // Nhập tên task và thời gian deadline
 void Task::input(){
     int d, m, y, hr, min;
@@ -34,10 +35,10 @@ void Task::input(){
     t.tm_mday = d;
     t.tm_hour = hr;
     t.tm_min = min;
-
+    time_t now = time(0); // Lấy thời gian hiện tại
     deadline = mktime(&t); // Lấy được thời gian deadline
 
-    time_t now = time(0); // Lấy thời gian hiện tại
+    
     if (deadline < now) { // So sánh nếu deadline < now
         std::cout << "[ERROR] Deadline nho ngay hien tai! Luu task that bai!\n";
         deadline = -1; // đánh dấu không hợp lệ
@@ -73,6 +74,14 @@ if (choose == 5) ds[i].deadline += 86400; // lỗi: deadline là private!
 if (choose == 5) ++ds[i];*/
 
 void Task::output() const{
+    // Bọc lớp !is.valid bảo vệ tránh crash
+    if (!isValid()) {
+        std::cout<<task_name<<" | [INVALID]\n";
+        return;
+    }
+    // Nếu deadline < now rồi thì báo quá hạn
+    time_t now = time(0); // Lấy thời gian hiện tại
+    if (deadline < now) std::cout<<"[OVERDUE] ";
     // Chuyển deadline thành dạng chuẩn dd/mm/yyyy hr:min
     struct tm* thoigian = localtime(&deadline);
     // In ra theo dạng thời gian, ngược lại với lúc chuyển d, m, y thành deadline
@@ -90,7 +99,7 @@ void Task::setFakeData(int i){
 }
 
 // Lấy deadline và task name để dùng ở nhiều tính năng
-int Task::getDeadline() const{
+time_t Task::getDeadline() const{
     return deadline;
 }
 

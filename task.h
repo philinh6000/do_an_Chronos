@@ -16,7 +16,7 @@ class Task{
         Task& operator++(); // Gia hạn thêm 1 ngày
         void output() const; // Hiển thị 1 task
         void setFakeData(int i); // Tạo data giả để test
-        int getDeadline() const; // Lấy deadline, dùng const vì chỉ xem
+        time_t getDeadline() const; // Lấy deadline, dùng const vì chỉ xem
         std::string getTaksName() const; // Lấy task name
         // Chuyển các dữ liệu string, time thành task_name, deadline
         void setDataChuan(std::string name, time_t dl); 

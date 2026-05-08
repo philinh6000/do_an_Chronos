@@ -14,6 +14,8 @@ class Project{
         std::vector<Task> ds;
         // Tạo stack chứa history
         std::stack<std::vector<Task>> history;
+        // Tạo stack để redo (tiến tới khi undo nhầm)
+        std::stack<std::vector<Task>> redo;
     public:
         // Tạo các hàm với vector để điều phối trong main
         // Không cần đưa vector vào tham số vì đã ở trong private
@@ -28,4 +30,5 @@ class Project{
         void setFolder(); // Tạo đường dẫn chứa và khởi tạo folder
         void saveToFile(); // Lưu ds vào file
         void loadFromFile(); // Đọc ds từ file
+        void back_to_menu(); // Xác nhận trước khi về Main Menu
 };

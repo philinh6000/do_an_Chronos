@@ -7,9 +7,16 @@ void Project::priority(){
     std::sort(ds.begin(), ds.end());
 }
 
+// Thêm bước xác nhận đã xem xong trước khi quay lại Main Menu
+void Project::back_to_menu(){
+    std::cout<<"\nBam phim bat ky de quay lai Main Menu\n";
+    std::string key;
+    std::cin>>key;
+}
+
 // 2. Hiển thị, chỉ xem.
 void Project::display() const{
-    std::cout<<"TASKLIST\n";
+    std::cout<<"\n===TASKLIST===\n\n";
     for (int i = 0; i < (int)ds.size(); i++){
         std::cout<<i<<". ";
         ds[i].output();
@@ -30,6 +37,7 @@ void Project::add_task(){
         saveToFile(); // Lưu snapshot vào f
     }
     display(); // Hiển thị lại danh sách sau khi thêm dù thành công hay không
+    back_to_menu();
 }
 
 // 3. Gia hạn
@@ -38,8 +46,13 @@ void Project::gia_han(int vi_tri){
         ++ds[vi_tri]; // gia hạn ở vị trí được chọn
         history.push(ds); // Lưu trạng thái mới
         saveToFile();
+        priority(); // Sắp xếp lại sau khi gia hạn
         display(); // Hiển thị lại danh sách sau khi gia hạn
-    }else std::cout<<"Vi tri khong ton tai!!\n";
+        back_to_menu();
+    }else {
+        std::cout<<"Vi tri khong ton tai!!\n";
+        back_to_menu();
+    }
 }
 
 // 4. Xóa
@@ -50,7 +63,11 @@ void Project::deleted(int vi_tri){
         history.push(ds); // Lưu trạng thái
         saveToFile();
         display(); // Hiển thị lại danh sách sau khi xóa
-    }else std::cout<<"Vi tri khong ton tai!!\n";
+        back_to_menu();
+    }else {
+        std::cout<<"Vi tri khong ton tai!!\n";
+        back_to_menu();
+    }
 }
 
 // 5. Xóa trong khoảng được chọn
@@ -70,7 +87,11 @@ void Project::erase_from_x_to_y(){
         history.push(ds); // Lưu vào snapshot
         saveToFile(); // Lưu vào file
         display(); // Hiển thị lại danh sách sau khi xóa
-    }else std::cout<<"Ban da huy xoa! Xoa that bai!!\n";
+        back_to_menu();
+    }else {
+        std::cout<<"Ban da huy xoa! Xoa that bai!!\n";
+        back_to_menu();
+    }
 }
 
 // 6. Hoàn tác
@@ -92,8 +113,15 @@ void Project::undo(){
         // => Lần sau hoàn tác tiếp thì sẽ lại đến vị trí tiếp theo
         saveToFile();
         display(); // Hiển thị danh sách sau khi undo
-    }else std::cout<<"Không có gì để hoàn tác!!\n";
+        back_to_menu();
+    }else {
+        std::cout<<"Không có gì để hoàn tác!!\n";
+        back_to_menu();
+    }
 }
+
+// 7. Redo - Hủy hoàn tác, quay lại bước trước
+
 
 void Project::demoOverflow(){
     std::string confirm;
@@ -108,7 +136,11 @@ void Project::demoOverflow(){
         }
         saveToFile();
         display();
-    }else std::cout<<"Ban da huy thao tac, khong co gi xay ra!!\n";
+        back_to_menu();
+    }else {
+        std::cout<<"Ban da huy thao tac, khong co gi xay ra!!\n";
+        back_to_menu();
+    }
 }
 
 // Lưu ds vào file:
@@ -155,6 +187,9 @@ void Project::loadFromFile(){
     while (std::getline(f, line)){
         // Cắt dữ liệu trong file để đưa vào đúng chỗ.
         // Bên trái | là task_name, bên phải là deadline
+        /*size_t: số nguyên không âm (unsigned int) cực lớn
+        Nếu find('|') không tìm thấy | sẽ trả về giá trị đặc biết std::string::npos
+        Là số rất lớn, nên cần dùng size_t*/
         size_t pos = line.find('|'); // Tìm | để cắt, pos là nội dung các ô giữa |
         // Nếu pos không phải dấu | thì xét
         if (pos != std::string::npos){ 
