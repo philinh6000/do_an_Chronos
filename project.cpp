@@ -31,9 +31,10 @@ void Project::add_task(){
     // Nếu t != -1 = isvalid
     // thêm toàn bộ t vừa nhập vào danh sách vector bằng push_back
     if (t.isValid()) {
+        history.push(ds);
         ds.push_back(t);
         priority(); // sắp xếp lại danh sách theo độ ưu tiên
-        history.push(ds); // Lưu trạng thái hiện tại vào stack
+        redo.push(ds); // Lưu trạng thái hiện tại vào stack
         saveToFile(); // Lưu snapshot vào f
     }
     display(); // Hiển thị lại danh sách sau khi thêm dù thành công hay không
@@ -43,8 +44,9 @@ void Project::add_task(){
 // 3. Gia hạn
 void Project::gia_han(int vi_tri){
     if (vi_tri >=0 && vi_tri < (int)ds.size()){
+        history.push(ds);
         ++ds[vi_tri]; // gia hạn ở vị trí được chọn
-        history.push(ds); // Lưu trạng thái mới
+        redo.push(ds); // Lưu trạng thái sau khi cập nhật để redo
         saveToFile();
         priority(); // Sắp xếp lại sau khi gia hạn
         display(); // Hiển thị lại danh sách sau khi gia hạn
@@ -59,8 +61,9 @@ void Project::gia_han(int vi_tri){
 void Project::deleted(int vi_tri){
     // chọn vị trí trong menu, xóa task ở vị trí được chọn.
     if (vi_tri >= 0 && vi_tri < (int)ds.size()) {
+        history.push(ds); // Lưu trạng thái undo
         ds.erase(ds.begin() + vi_tri);
-        history.push(ds); // Lưu trạng thái
+        redo.push(ds); // Lưu trạng thái
         saveToFile();
         display(); // Hiển thị lại danh sách sau khi xóa
         back_to_menu();
@@ -83,8 +86,9 @@ void Project::erase_from_x_to_y(){
     if (confirm == "y" || confirm == "Y"){
         // Xóa từ vị trí bắt đầu x, đến vị trí y.
         // Vì erase sẽ dừng trước end nên +1 để xóa được ở vị trí y.
+        history.push(ds);
         ds.erase(ds.begin() + x, ds.begin() + y + 1);
-        history.push(ds); // Lưu vào snapshot
+        redo.push(ds); // Lưu vào snapshot
         saveToFile(); // Lưu vào file
         display(); // Hiển thị lại danh sách sau khi xóa
         back_to_menu();
@@ -96,8 +100,7 @@ void Project::erase_from_x_to_y(){
 
 // 6. Hoàn tác
 void Project::undo(){
-    /*VD:
-    ds đang có A, B, C:
+    /*VD: ds đang có A, B, C:
     1. Thêm: history.push -> lưu lại A B C, còn A B C D thì chưa lưu
     Nhưng ds đang dừng ở trạng thái A B C D
     2. Xóa B -> history.push lưu lại ABCD -> stack có ABC ABCD và ds là ACD
@@ -105,6 +108,8 @@ void Project::undo(){
     3. Khi hoàn tác:*/
     // Nếu history có dữ liệu
     if (!history.empty()){
+        // Đưa vào redo trước
+        redo.push(ds);
         // Lấy ABCD ra ds trở lại trước -> ds = history.top()
         ds = history.top(); // -> Lúc này ds đang là ABCD
         // Nhưng trong stack vẫn còn lưu top trên cùng là ABCD
@@ -115,13 +120,31 @@ void Project::undo(){
         display(); // Hiển thị danh sách sau khi undo
         back_to_menu();
     }else {
-        std::cout<<"Không có gì để hoàn tác!!\n";
+        std::cout<<"Khong co gi de Undo!!\n";
         back_to_menu();
     }
 }
 
 // 7. Redo - Hủy hoàn tác, quay lại bước trước
-
+void Project::Redo(){
+    /*VD: Thêm 5 task -> 1 2 3 4 5 -> undo 5 lần dừng ở vị trí 0
+    -> lưu ngược vào redo có: 5 4 3 2 1
+    -> Khi redo sẽ từ vị trí 0 lấy ngược lại 1 2 3 4 5, dừng lại tùy thích.
+    Giả sử redo 3 lần -> 1 2 3 -> lưu ngược history 1 2 3
+    -> Khi undo sẽ lại lùi ngược 3 2 1*/
+    if (!redo.empty()){
+        // Lưu vào history trước
+        history.push(ds); 
+        ds = redo.top(); // Lấy redo trên cùng ra
+        redo.pop(); // Xóa cái trên cùng đi
+        saveToFile(); // Lưu lại
+        display();
+        back_to_menu();
+    }else {
+        std::cout<<"Khong co gi de Redo!!\n";
+        back_to_menu();
+    }
+}
 
 void Project::demoOverflow(){
     std::string confirm;

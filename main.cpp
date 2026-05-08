@@ -11,7 +11,7 @@ int main(){
         // Dọn dẹp sạch lựa chọn trước để chuẩn bị cho lựa chọn tiếp theo.
         system("cls");
         std::cout<<"\n===CHRONOS MENU===\n\n";
-        std::cout<<"1. Them\n2. Xem\n3. GiaHan\n4. Xoa\n5. Xoa trong khoang duoc chon\n6. Undo\n7. Demo\n0. Thoat\n";
+        std::cout<<"1. Them\n2. Xem\n3. GiaHan\n4. Xoa\n5. Xoa trong khoang duoc chon\n6. Undo\n7. Redo\n8. Demo\n0. Thoat\n";
         std::cout<<"Chon: ";
         std::cin>>choose;
         std::cin.ignore(); // xóa enter cho lần tiếp.
@@ -54,8 +54,10 @@ int main(){
         }
         // 6. Hoàn tác
         else if (choose == 6) p.undo();
-        // 7. Demo thử với 10000 task một lượt
-        else if (choose == 7) p.demoOverflow();
+        // 7. Redo
+        else if (choose == 7) p.Redo();
+        // 8. Demo thử với 10000 task một lượt
+        else if (choose == 8) p.demoOverflow();
         else std::cout<<"Vui long nhap so trong Menu!";
     }
     return 0;

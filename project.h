@@ -26,6 +26,7 @@ class Project{
         void deleted(int vi_tri); // Xóa 1 task trong danh sách
         void erase_from_x_to_y(); // Xóa trong khoảng được chọn
         void undo();
+        void Redo();
         void demoOverflow(); // demo để test 10000 task
         void setFolder(); // Tạo đường dẫn chứa và khởi tạo folder
         void saveToFile(); // Lưu ds vào file
