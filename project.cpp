@@ -141,7 +141,7 @@ void Project::erase_from_x_to_y(){
     std::cin>>x;
     std::cout<<"Chon vi tri ket thuc muon xoa: ";
     std::cin>>y;
-    if ((x >= 0 && x < (int)ds.size()) && (y > 0 && y < (int)ds.size())){
+    if (x >= 0 && y < (int)ds.size() && x <= y){
         std::cout<<"Bam Y de xac nhan xoa! Bam phim khac de tu choi!\n";
         std::cin>>confirm;
         if (confirm == "y" || confirm == "Y"){

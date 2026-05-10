@@ -30,15 +30,15 @@ Nếu nhập đúng int và là số > now -> thực thi tính năng cộng dồ
 Đối với giờ phút:
 - if (hr == "A") hr = 23, min = 59; else if nhập sai -> while i--, nhập đúng thì cho qua. - DONE 5/10/26
 3. Thêm tính năng:'Sửa Task'
--> Cách thực thi: Trong sửa -> Chọn vị trí task (chọn task) -> Chọn vị trí field (chọn field) -> std::cin>>new_infor -> task_name/d/m/y/hr/min = new_infor.
+-> Cách thực thi: Trong sửa -> Chọn vị trí task (chọn task) -> Chọn vị trí field (chọn field) -> std::cin>>new_infor -> task_name/deadline = new_infor. - DONE - 5/10/26
 4. Chọn nhiều task 1 lượt -> Chọn nhiều field cần sửa một lượt -> lần lượt nhập thông tin mới từng field - PENDING
 
 ** Tính năng 'Sửa' và lựa chọn sau mỗi tính năng:
 - Trong menu: choose == 3 để sửa
 - Ở mỗi lần kết thúc tính năng (ví dụ sau khi thêm, xem, sửa, xóa, gia hạn) cho chọn:
-1. Bấm 0 để quay lại Main Menu
-2. Bấm 3 để sửa -> giúp việc sửa có thể chọn lại nhanh ngay sau mỗi lần sửa -> gần tương đương sửa nhiều field liên tục, thay vì phải quay ra Main Menu chọn sửa.
-3. Else: báo lỗi: bắt buộc bấm 0 hoặc 3.
+1. Bấm 0 để quay lại Main Menu - DONE - 5/10/26
+2. Bấm 3 để sửa -> giúp việc sửa có thể chọn lại nhanh ngay sau mỗi lần sửa -> gần tương đương sửa nhiều field liên tục, thay vì phải quay ra Main Menu chọn sửa. - SKIP
+3. Else: báo lỗi: bắt buộc bấm 0 hoặc 3. - SKIP
 
 ---
 # 9/5 - 14/5
@@ -53,3 +53,4 @@ Nếu nhập đúng int và là số > now -> thực thi tính năng cộng dồ
 7. Sửa giahan và deleted để check int vi_tri trong hàm.
 8. Thêm tính năng sửa task.
 9. Thêm sleep(s), change back_to_menu chỉ về menu khi bấm 0, dùng sleep thay cho back_to_menu ở các function trừ display.
+10. sửa erase_from_x_to_y: thêm điều kiện kiểm tra x, y.
