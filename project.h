@@ -20,10 +20,11 @@ class Project{
         // Tạo các hàm với vector để điều phối trong main
         // Không cần đưa vector vào tham số vì đã ở trong private
         void priority(); // Sắp xếp thứ tự ưu tiên
-        void add_task(); // 1. Thêm
-        void display() const; // 2. Hiển thị - chỉ xem
-        void gia_han(int vi_tri); // 3. Gia hạn
-        void deleted(int vi_tri); // Xóa 1 task trong danh sách
+        void add_task(); // Thêm
+        void display() const; // Hiển thị - chỉ xem
+        void sua_task(); // Sửa task
+        void gia_han(); // Gia hạn
+        void deleted(); // Xóa 1 task trong danh sách
         void erase_from_x_to_y(); // Xóa trong khoảng được chọn
         void undo();
         void Redo();
@@ -31,5 +32,6 @@ class Project{
         void setFolder(); // Tạo đường dẫn chứa và khởi tạo folder
         void saveToFile(); // Lưu ds vào file
         void loadFromFile(); // Đọc ds từ file
-        void back_to_menu(); // Xác nhận trước khi về Main Menu
+        void sleep(int s); // Gọi sleep nhanh
+        void back_to_menu(std::string text);
 };
