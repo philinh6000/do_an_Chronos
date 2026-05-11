@@ -7,7 +7,7 @@
 
 
 // Kiểm tra kết quả và nhập cout nhanh
-int Task::correct_val(std::string text, int now){
+int Task::correct_val(std::string text, int min_val, int max_val){
     // Nhập text bằng cout:
     std::cout<<text;
     // Chuẩn bị kiểm tra int và kiểm tra so với now
@@ -16,7 +16,7 @@ int Task::correct_val(std::string text, int now){
     // Khi i lớn hơn 0 thì được nhập lại nếu sai
     while (i > 0){
         // Nếu gia_tri là số và gia_tri > now (biến now sẽ được điền theo từng field)
-        if (std::cin>>gia_tri && gia_tri >= now){
+        if (std::cin>>gia_tri && gia_tri >= min_val && gia_tri <= max_val){
             std::cin.ignore(1000, '\n'); // Dọn tối đa 1000 ký tự rác cho đến khi gặp \n
             return gia_tri; // Đúng thì trả về con số.
         }
@@ -26,9 +26,9 @@ int Task::correct_val(std::string text, int now){
         std::cin.ignore(1000, '\n');
         i--; // Giảm số lần được nhập
         // Gửi thông báo số lần còn được nhập lại:
-        if (i > 0) std::cout<<"Thoi gian khong hop le!! Con "<<i<<" lan nhap!\n"
+        if (i > 0) std::cout<<"Thong tin khong hop le!! Con "<<i<<" lan nhap!\n"
         <<text;
-        else std::cout<<"Thoi gian khong hop le!! Khong the khoi tao!!\n";
+        else std::cout<<"Thong tin khong hop le!! Yeu cau that bai!!\n";
     }
     // Sau vòng lặp vẫn sai, thì trả về giá trị -1 để dánh dấu xử lý trong deadline
     return -1;
@@ -53,26 +53,26 @@ void Task::input_time(){
 
     // Nhập time
     // Nhập năm:
-    y = correct_val("Nhap nam (bat buoc nhap 4 so): ", nam_hien_tai); 
+    y = correct_val("Nhap nam (bat buoc nhap 4 so): ", nam_hien_tai, nam_hien_tai+100); 
     // Nếu năm là -1 = sai -> về menu luôn
     if (y == -1) {deadline = -1; return;}
 
     // Nếu đúng thì rơi xuống nhập tháng
     // Nếu năm > now thì tháng mấy cũng được. đặt 1 vì chắc chắn không có tháng nhỏ hơn 1
-    if (y > nam_hien_tai) m = correct_val("Nhap thang: ", 1);
+    if (y > nam_hien_tai) m = correct_val("Nhap thang: ", 1, 100);
     // Nếu năm = now thì tháng phải lớn hơn tháng hiện tại.
-    else m = correct_val("Nhap thang: ", thang_hien_tai);
+    else m = correct_val("Nhap thang: ", thang_hien_tai, 100);
 
     if (m == -1) {deadline = -1; return;} // Sai thì thoát ra menu
 
     // Tương tự với ngày, giờ, phút. Giả sử năm 2027 thì tháng 1 cũng > now.
-    if (y > nam_hien_tai || m > thang_hien_tai) d = correct_val("Nhap ngay: ", 1);
-    else d = correct_val("Nhap ngay: ", ngay_hien_tai);
+    if (y > nam_hien_tai || m > thang_hien_tai) d = correct_val("Nhap ngay: ", 1, 100);
+    else d = correct_val("Nhap ngay: ", ngay_hien_tai, 100);
     if (d == -1) {deadline = -1; return;}
 
     // Chọn giờ mặc định hoặc nhập giờ phút: Nếu >= 24 giờ thì tự động lấy giờ mặc định
-    if (y > nam_hien_tai || m > thang_hien_tai || d > ngay_hien_tai) hr = correct_val("Nhap gio (Nhap >= 24 de lay gio mac dinh 23:59): ", 0);
-    else hr = correct_val("Nhap gio (Nhap >= 24 de lay gio mac dinh 23:59): ", gio_hien_tai);
+    if (y > nam_hien_tai || m > thang_hien_tai || d > ngay_hien_tai) hr = correct_val("Nhap gio (Nhap >= 24 de lay gio mac dinh 23:59): ", 0, 100);
+    else hr = correct_val("Nhap gio (Nhap >= 24 de lay gio mac dinh 23:59): ", gio_hien_tai, 100);
 
     if (hr == -1) {deadline = -1; return;} // Nếu giờ nhập ra sai thì return
     // Nếu ra đúng mà số giờ >= 24 thì lấy thời gian mặc định, bỏ qua nhập phút.
@@ -82,8 +82,8 @@ void Task::input_time(){
     }
     // Ngược lại thì hr vẫn giữ nguyên và tiến đến nhập phút
     else{
-        if (y > nam_hien_tai || m > thang_hien_tai || d > ngay_hien_tai || hr > gio_hien_tai) min = correct_val("Nhap phut: ", 0);
-        else min = correct_val("Nhap phut: ", phut_hien_tai + 1); // Lấy dư ra 1 phút so với hiện tại tránh lệch giờ
+        if (y > nam_hien_tai || m > thang_hien_tai || d > ngay_hien_tai || hr > gio_hien_tai) min = correct_val("Nhap phut: ", 0, 100);
+        else min = correct_val("Nhap phut: ", phut_hien_tai + 1, 100); // Lấy dư ra 1 phút so với hiện tại tránh lệch giờ
         if (min == -1) {deadline = -1; return;}}
     // Nếu đúng hết thì xử lý: Chuyển đổi thời gian từ số nguyên thành giờ
     struct tm t = {0};

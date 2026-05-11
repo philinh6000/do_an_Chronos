@@ -22,7 +22,7 @@ class Task{
         std::string getTaksName() const; // Lấy task name
         // Chuyển các dữ liệu string, time thành task_name, deadline
         void setDataChuan(std::string name, time_t dl); 
-        int correct_val(std::string text, int now); // Kiểm tra kết quả và nhập cout nhanh
+        int correct_val(std::string text, int min_val, int max_val); // Kiểm tra kết quả và nhập cout nhanh
         // Lấy task_name và name bằng new name
         void setTaskName(std::string name) {task_name = name;}
         void setDeadline(time_t dl) {deadline = dl;}

@@ -4,6 +4,7 @@
 #include <thread> // Để dùng sleep thay cho back_to_menu
 #include <chrono> // Để dùng sleep thay cho back_to_menu
 
+//=== UTILS ===
 // Sắp xếp task thành priority
 void Project::priority(){
     std::sort(ds.begin(), ds.end());
@@ -17,7 +18,6 @@ void Project::back_to_menu(std::string text){
         std::cin>>key;
     }
     while(key != "0");
-    if (key == "0") return;
 }
 
 // Gọi sleep nhanh
@@ -34,6 +34,7 @@ void Project::display() const{
     }
 }
 
+// === FUNCTION ===
 // Mỗi thao tác đều lưu snapshot vào f ngay để đảm bảo an toàn.
 // 1. Thêm task
 void Project::add_task(){
@@ -57,81 +58,65 @@ void Project::sua_task(){
     // Gọi task cần sửa là Task t
     Task t;
     int choose_task;
-    // Chọn task muốn sửa
-    choose_task = t.correct_val("Chon task muon sua: ", 0);
-    // Nếu task không tồn tại
-    if (choose_task < 0 || choose_task >= (int)ds.size()) {
-        std::cout<<"Vi tri khong ton tai!!";
-        sleep(2);
-    }else{
-        // Nếu đúng -> Lưu trước khi sửa.
-        history.push(ds);
+    // Chọn task muốn sửa, nếu sai sẽ báo thất bại và quay về main menu
+    choose_task = t.correct_val("Chon task muon sua: ", 0, (int)ds.size()-1);
+    // Nếu đúng -> Lưu trước khi sửa.
+    history.push(ds);
 
-        // Xử lý nếu nội dung được chọn không có trong menu
-        // Chọn loại field muốn sửa:
-        std::string choose_field;
-        std::cout<<"1. Sua Task Name\n2. Sua Deadline\n";
-        std::cin>>choose_field;
-        std::cin.ignore();
-        // Nếu chọn field 1
-        if (choose_field == "1") {
-            std::string new_name;
-            std::cout<<"Nhap ten task moi: ";
-            std::getline(std::cin, new_name);
-            ds[choose_task].setTaskName(new_name);
-        }
-        // Chọn 2 thì nhập deadline
-        else if (choose_field == "2"){
-            ds[choose_task].input_time();
-        }
-        // Nhập ký tự khác thì return
-        else {
-            std::cout<<"[ERROR] Field không tồn tại!!";
-            sleep(2);
-        }
-        priority(); // Sắp xếp lại
-        redo.push(ds); // Lưu vào redo
-        saveToFile(); // Lưu vào ổ đĩa
-        std::cout<<"Sua task thanh cong! Bam 2 de xem lai!\n";
-        sleep(2);}
-}
+    // Xử lý nếu nội dung được chọn không có trong menu
+    // Chọn loại field muốn sửa:
+    std::string choose_field;
+    std::cout<<"1. Sua Task Name\n2. Sua Deadline\n";
+    std::cin>>choose_field;
+    std::cin.ignore();
+    // Nếu chọn field 1
+    if (choose_field == "1") {
+        std::string new_name;
+        std::cout<<"Nhap ten task moi: ";
+        std::getline(std::cin, new_name);
+        ds[choose_task].setTaskName(new_name);}
+    // Chọn 2 thì nhập deadline
+    else if (choose_field == "2"){
+        ds[choose_task].input_time();
+    }
+    // Nhập ký tự khác thì return
+    else {
+        std::cout<<"[ERROR] Field không tồn tại!!";
+        sleep(2);
+    }
+    priority(); // Sắp xếp lại
+    redo.push(ds); // Lưu vào redo
+    saveToFile(); // Lưu vào ổ đĩa
+    std::cout<<"Sua task thanh cong! Bam 2 de xem lai!\n";
+    sleep(2);}
+
 // Gia hạn
 void Project::gia_han(){
     display(); // Hiện thị để lựa vị trí
     int vi_tri;
     Task t;
-    vi_tri = t.correct_val("Nhap vi tri: ", 0);
-    if (vi_tri < 0 || vi_tri >= (int)ds.size()) {
-        std::cout<<"Vi tri khong ton tai!\n";
-        sleep(2);
-    }else{
-        // Nếu thỏa điều kiện thì thực thi:
-        history.push(ds);
-        ++ds[vi_tri]; // gia hạn ở vị trí được chọn
-        redo.push(ds); // Lưu trạng thái sau khi cập nhật để redo
-        saveToFile();
-        priority(); // Sắp xếp lại sau khi gia hạn
-        std::cout<<"Gia han thanh cong! Bam 2 de xem lai!\n";
-        sleep(2);}
-}
+    vi_tri = t.correct_val("Nhap vi tri: ", 0, (int)ds.size());
+    // Nếu thỏa điều kiện thì thực thi:
+    history.push(ds);
+    ++ds[vi_tri]; // gia hạn ở vị trí được chọn
+    redo.push(ds); // Lưu trạng thái sau khi cập nhật để redo
+    saveToFile();
+    priority(); // Sắp xếp lại sau khi gia hạn
+    std::cout<<"Gia han thanh cong! Bam 2 de xem lai!\n";
+    sleep(2);}
 
 // Xóa
 void Project::deleted(){
     display();
     int vi_tri;
     Task t;
-    vi_tri = t.correct_val("Nhap vi tri: ", 0);
-    if (vi_tri < 0 || vi_tri >= (int)ds.size()) {
-        std::cout<<"Vi tri khong ton tai!\n";
-        sleep(2);
-    }else{
-        history.push(ds); // Lưu trạng thái undo
-        ds.erase(ds.begin() + vi_tri);
-        redo.push(ds); // Lưu trạng thái
-        saveToFile();
-        std::cout<<"Xoa task thanh cong! Bam 2 de xem lai!\n";
-        sleep(2);}
-}
+    vi_tri = t.correct_val("Nhap vi tri: ", 0, (int)ds.size());
+    history.push(ds); // Lưu trạng thái undo
+    ds.erase(ds.begin() + vi_tri);
+    redo.push(ds); // Lưu trạng thái
+    saveToFile();
+    std::cout<<"Xoa task thanh cong! Bam 2 de xem lai!\n";
+    sleep(2);}
 
 // Xóa trong khoảng được chọn
 void Project::erase_from_x_to_y(){

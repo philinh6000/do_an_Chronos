@@ -54,3 +54,6 @@ Nếu nhập đúng int và là số > now -> thực thi tính năng cộng dồ
 8. Thêm tính năng sửa task.
 9. Thêm sleep(s), change back_to_menu chỉ về menu khi bấm 0, dùng sleep thay cho back_to_menu ở các function trừ display.
 10. sửa erase_from_x_to_y: thêm điều kiện kiểm tra x, y.
+## 12/5
+11. fix bug crash khi nhập thời gian quá lớn: Tạo giới hạn thời gian tối đa
+12. Thêm tính năng 3 lần nhập lại nếu nhập sai vị trí cho: sửa, gia hạn, xóa task
