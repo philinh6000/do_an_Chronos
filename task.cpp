@@ -54,6 +54,14 @@ void Task::input_time(){
     // Nhập time
     // Nhập năm:
     y = correct_val("Nhap nam (bat buoc nhap 4 so): ", nam_hien_tai, nam_hien_tai+100); 
+    /*Nếu không giới hạn năm: từ 0 giờ 19/1/3001 có thể nhập nhưng không lưu
+    Lý do: Thư viên MingW/MSVC ở phiên bản cũ có cấu hình mặc định chỉ hỗ trợ mktime
+    đến ngày 31/12/3000 theo giáo trình và hết ngày 18/1/3001 theo thực tế.
+    Từ 0 giờ ngày 19/1/3001 không được hàm _mktime hỗ trợ, nên sẽ return -1 
+    -> deadline = -1 sau khi nhập hết -> theo hàm isValid()
+    trong add_task làm cho deadline = -1 thì bỏ qua 
+    -> trở về Main Menu mà không hiện thông báo gì cả.*/
+    
     // Nếu năm là -1 = sai -> về menu luôn
     if (y == -1) {deadline = -1; return;}
 
