@@ -24,7 +24,6 @@ class Project{
         void add_task(); // Thêm
         void display() const; // Hiển thị - chỉ xem
         void display_done() const; // Hiển thị task done
-        void display_all() const; // Hiển thị tất cả
         void update_task(); // Cập nhật task
         void erase_from_x_to_y(); // Xóa trong khoảng được chọn
         void undo();

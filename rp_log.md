@@ -60,7 +60,9 @@ Nếu nhập đúng int và là số > now -> thực thi tính năng cộng dồ
 ## 14/5
 13. Sửa: hiển thị TL ngay lúc chọn Menu, bỏ tính năng bấm xem TL.
 14. Thêm tính năng Task Completed trong Update Task.
-15. Thêm xem lại Task Completed và All Task (Đã và chưa hoàn thành)
+15. Thêm xem lại Task Completed
 16. Bổ sung lưu CT và CD vào file.
 17. Sửa: đưa gia hạn task, xóa task vào update_task -> cùng là thao tác cập nhật trên 1 task.
 18. Sửa tùy chọn trên menu: xóa lựa chọn gia hạn, xóa trong main menu -> đời vào Update Task
+## 14/5
+19. Fix: Tạo giới hạn đúng chuẩn cho ngày, tháng, năm để không tự cộng dồn sai ngày

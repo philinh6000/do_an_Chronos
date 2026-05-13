@@ -37,6 +37,7 @@ void Project::display() const{
         }
         i++;
     }
+    std::cout<<"\n"; // Thêm 1 enter khi in xong để cách đẹp với menu
 }
 // Hiển thị task done
 void Project::display_done() const{
@@ -50,16 +51,7 @@ void Project::display_done() const{
         }
         i++;
     }
-}
-// Hiển thị tất cả
-void Project::display_all() const {
-    std::cout<<"\n===CHRONOS TASKLIST===\n\n";
-    int i = 0;
-    for (const auto &t:ds){
-        std::cout<<"Vi tri Task: "<<i<<". ";
-        t.outputDone();
-        i++;
-    }
+    std::cout<<"\n";
 }
 
 // === FUNCTION ===
@@ -77,7 +69,7 @@ void Project::add_task(){
         redo.push(ds); // Lưu trạng thái hiện tại vào stack
         saveToFile(); // Lưu snapshot vào f
         std::cout<<"Luu task thanh cong!!\n";
-    }else std::cout<<"Thoi gian khong hop le! Quay lai Main Menu!\n";
+    }
     sleep(2); // Dừng một chút để xem thông báo.
 }
 
@@ -95,7 +87,7 @@ void Project::update_task(){
     // Xử lý nếu nội dung được chọn không có trong menu
     // Chọn loại field muốn sửa:
     std::string choose_field;
-    std::cout<<"1. Sua Task Name\n2. Sua Deadline\n3. Xac nhan da hoan thanh\n4. Gia han\n5. Xoa";
+    std::cout<<"1. Sua Task Name\n2. Sua Deadline\n3. Xac nhan da hoan thanh\n4. Gia han\n5. Xoa\n";
     std::cin>>choose_field;
     std::cin.ignore();
     // Nếu chọn field 1
@@ -286,17 +278,18 @@ void Project::loadFromFile(){
         time_t dl, cd;
         bool isD;
         // Đọc từng phần được cắt nhau bởi dấu | bằng getline
-        std::getline(ss, name, '|'); // Lấy được tên
+        // dùng std::ws để xóa khoảng trắng thừa
+        std::getline(ss >> std::ws, name, '|'); // Lấy được tên 
         // Dùng temp lấy dl ở | thứ 2
-        std::getline(ss, temp, '|'); 
+        std::getline(ss >> std::ws, temp, '|'); 
         // Chuyển về dl
         dl = std::stoll(temp); // Chuyển temp từ string thành ll lấy dl
         // Tương tự với isD và cd
-        std::getline(ss, temp, '|');
+        std::getline(ss >> std::ws, temp, '|');
         isD = (std::stoi(temp)) != 0; // Chuyển str thành int lấy bool
         /*Đặt cứ != 0 thì là true, == 0 thì false.
         Nếu có lúc bị lưu thành 5/0 => 5 !=0 vẫn được tính thành true, không bị bỏ qua.*/
-        std::getline(ss, temp, '|');
+        std::getline(ss >> std::ws, temp);
         cd = std::stoll(temp); // Chuyển str thành ll lấy cd
 
         // Lọc bỏ line hỏng

@@ -4,7 +4,16 @@
 #include <algorithm>
 #include <vector>
 #include <iomanip> // Để dùng setfill và setw thêm số, đảm bảo định dạng 2 số cho time.
-
+// Xử lý ngày theo năm, tháng
+// 1. Tạo mảng chứa ngày trong tháng
+const int Task::DaysInMonth[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+// 2. Xử lý năm nhuận: % 4 và 400 == 0, % 100 !=0
+bool Task::is_leap(int y) const{return (y%4 == 0 && y%100 != 0 || y%400 == 0);}
+// 3. Nếu là năm nhuận & tháng 2 thì return 29, còn không thì trả về ngày trong mảng
+int Task::getDay(int m, int y) const{
+    if (m == 2 && is_leap(y)) return 29;
+    return DaysInMonth[m];
+}
 
 // Kiểm tra kết quả và nhập cout nhanh
 int Task::correct_val(const std::string &text, const int min_val, const int max_val){
@@ -67,15 +76,15 @@ void Task::input_time(){
 
     // Nếu đúng thì rơi xuống nhập tháng
     // Nếu năm > now thì tháng mấy cũng được. đặt 1 vì chắc chắn không có tháng nhỏ hơn 1
-    if (y > nam_hien_tai) m = correct_val("Nhap thang: ", 1, 100);
+    if (y > nam_hien_tai) m = correct_val("Nhap thang: ", 1, 12);
     // Nếu năm = now thì tháng phải lớn hơn tháng hiện tại.
-    else m = correct_val("Nhap thang: ", thang_hien_tai, 100);
+    else m = correct_val("Nhap thang: ", thang_hien_tai, 12);
 
     if (m == -1) {deadline = -1; return;} // Sai thì thoát ra menu
 
     // Tương tự với ngày, giờ, phút. Giả sử năm 2027 thì tháng 1 cũng > now.
-    if (y > nam_hien_tai || m > thang_hien_tai) d = correct_val("Nhap ngay: ", 1, 100);
-    else d = correct_val("Nhap ngay: ", ngay_hien_tai, 100);
+    if (y > nam_hien_tai || m > thang_hien_tai) d = correct_val("Nhap ngay: ", 1, getDay(m, y));
+    else d = correct_val("Nhap ngay: ", ngay_hien_tai, getDay(m, y));
     if (d == -1) {deadline = -1; return;}
 
     // Chọn giờ mặc định hoặc nhập giờ phút: Nếu >= 24 giờ thì tự động lấy giờ mặc định
@@ -103,12 +112,17 @@ void Task::input_time(){
     
     deadline = mktime(&t); // Lấy được thời gian deadline
 }
+
+void Task::input_flag_done(){
+    is_done = false; // Khi task vừa nhập, done luôn = false
+    completed_date = 0; // chưa có thời gian hoàn thành
+}
+
 // Nhập tên task và thời gian deadline
 void Task::input(){
     input_task_name();
     input_time();
-    is_done = false; // Khi task vừa nhập, done luôn = false
-    completed_date = 0; // chưa có thời gian hoàn thành
+    input_flag_done();
 }
 // Đánh dấu hoàn thành
 void Task::markAsDone(){
@@ -179,7 +193,11 @@ void Task::outputDone() const{
     int ngay_deadline = thoigian->tm_mday; // dùng -> để lấy tương tự this, đưa thời gian thực tế để chuyển đổi
     int gio_deadline = thoigian->tm_hour;
     int phut_deadline = thoigian->tm_min;
-
+    // Bọc an toàn với cd = 0
+    if (completed_date <= 0){
+        std::cout<<" - COMPLETED DATE: N/A\n";
+        return;
+    }
     // Chuyển completed date thành dạng chuẩn
     struct tm* cd = localtime(&completed_date);
     int nam_cd = (cd->tm_year+1900); // Tương tự, ngược lại lúc chuyển qua giây
@@ -205,6 +223,8 @@ void Task::outputDone() const{
 void Task::setFakeData(int i){
     task_name = "Task thu " + std::to_string(i); // task name = số thứ tự
     deadline = time(0) + (i*3600); // deadline lấy hiện tại + 1hr mỗi lần tạo
+    is_done = false;
+    completed_date = 0;
 }
 
 // Lấy task name và dl dùng nhanh

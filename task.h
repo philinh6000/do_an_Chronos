@@ -10,10 +10,16 @@ class Task{
         time_t deadline;
         bool is_done; // Xác nhận task đã xong hoặc chưa
         time_t completed_date; // Kiểm tra thời gian hoàn thành
+        static const int DaysInMonth[]; // Tạo mảng đặt ngày trong tháng để lấy ngày chuẩn
+        bool is_leap(int y) const; // Tạo bool xác nhận có phải năm nhuận hay không
     public:
+        int getDay(int m, int y) const; // Lấy được ngày trong tháng theo năm.
+        // Input
         void input(); // Hàm nhập cha
         void input_task_name(); // Chỉ nhập task name
         void input_time(); // Chỉ nhập time
+        void input_flag_done(); // Nhập flag done false + complete time 0 cho task mới
+        //---
         bool isValid() const {return deadline != -1;}
         bool operator <(const Task& other) const; // so sánh priority theo thời gian
         Task& operator++(); // Gia hạn thêm 1 ngày
