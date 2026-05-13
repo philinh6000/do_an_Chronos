@@ -7,7 +7,7 @@
 
 
 // Kiểm tra kết quả và nhập cout nhanh
-int Task::correct_val(std::string text, int min_val, int max_val){
+int Task::correct_val(const std::string &text, const int min_val, const int max_val){
     // Nhập text bằng cout:
     std::cout<<text;
     // Chuẩn bị kiểm tra int và kiểm tra so với now
@@ -107,6 +107,13 @@ void Task::input_time(){
 void Task::input(){
     input_task_name();
     input_time();
+    is_done = false; // Khi task vừa nhập, done luôn = false
+    completed_date = 0; // chưa có thời gian hoàn thành
+}
+// Đánh dấu hoàn thành
+void Task::markAsDone(){
+    is_done = true;
+    completed_date = time(0); // Lúc đánh dấu xong là hiện tại,
 }
 
 // Đặt điều kiện so sánh nếu deadline < hơn.
@@ -159,15 +166,51 @@ void Task::output() const{
     <<std::setfill('0')<<std::setw(2)<<phut_deadline<<"\n";
 }
 
+void Task::outputDone() const{
+    // Bọc an toàn:
+    if (!isValid()) return;
+    // Nếu deadline < now rồi thì báo quá hạn
+    time_t now = time(0); // Lấy thời gian hiện tại
+    if (deadline < now) std::cout<<"[OVERDUE] ";
+    // Chuyển deadline thành dạng chuẩn dd/mm/yyyy hr:min
+    struct tm* thoigian = localtime(&deadline);
+    int nam_deadline = (thoigian->tm_year+1900); // Tương tự, ngược lại lúc chuyển qua giây
+    int thang_deadline = (thoigian->tm_mon+1); // bỏ trong ngoặc để thực hiện +1, trả lại số nguyên đúng (trong C++, tháng bắt đầu từ 0)
+    int ngay_deadline = thoigian->tm_mday; // dùng -> để lấy tương tự this, đưa thời gian thực tế để chuyển đổi
+    int gio_deadline = thoigian->tm_hour;
+    int phut_deadline = thoigian->tm_min;
+
+    // Chuyển completed date thành dạng chuẩn
+    struct tm* cd = localtime(&completed_date);
+    int nam_cd = (cd->tm_year+1900); // Tương tự, ngược lại lúc chuyển qua giây
+    int thang_cd = (cd->tm_mon+1); // bỏ trong ngoặc để thực hiện +1, trả lại số nguyên đúng (trong C++, tháng bắt đầu từ 0)
+    int ngay_cd = cd->tm_mday; // dùng -> để lấy tương tự this, đưa thời gian thực tế để chuyển đổi
+    int gio_cd = cd->tm_hour;
+    int phut_cd = cd->tm_min;
+
+    // In ra
+    std::cout<<task_name<<" | "
+    <<std::setfill('0')<<std::setw(2)<<ngay_deadline<<"/" 
+    <<std::setfill('0')<<std::setw(2)<<thang_deadline<<"/" 
+    <<nam_deadline<<" " 
+    <<std::setfill('0')<<std::setw(2)<<gio_deadline<<":"
+    <<std::setfill('0')<<std::setw(2)<<phut_deadline<<" - COMPLETED DATE: "
+    <<std::setfill('0')<<std::setw(2)<<ngay_cd<<"/" 
+    <<std::setfill('0')<<std::setw(2)<<thang_cd<<"/" 
+    <<nam_cd<<" " 
+    <<std::setfill('0')<<std::setw(2)<<gio_cd<<":"
+    <<std::setfill('0')<<std::setw(2)<<phut_cd<<"\n";
+}
+
 void Task::setFakeData(int i){
     task_name = "Task thu " + std::to_string(i); // task name = số thứ tự
     deadline = time(0) + (i*3600); // deadline lấy hiện tại + 1hr mỗi lần tạo
 }
 
 // Lấy task name và dl dùng nhanh
-time_t Task::getDeadline() const {return deadline;} // Lấy deadline
-std::string Task::getTaksName() const {return task_name;} // Lấy task name
-void Task::setDataChuan(std::string name, time_t dl){
+void Task::setDataChuan(const std::string &name, const time_t dl, const bool isD, const time_t cd){
     task_name = name; // Lấy task_name = thông tin string mới
     deadline = dl; // Lấy deadline = thông tin time mới
+    is_done = isD; // Lấy is_done = thông tin bool
+    completed_date = cd; // Lấy ngày hoàn thành = time
 }

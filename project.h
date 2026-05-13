@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <vector>
 #include <fstream> // Đọc, ghi file
+#include <sstream> // Dùng stringstream cắt chuỗi trong file
 #include <cstdlib> // ép tạo path & folder lưu file = lênh mkdir
 //namespace fs = std::filesystem; // Đặt tên viết tắt cho filesystem nếu cần dùng
 
@@ -22,9 +23,9 @@ class Project{
         void priority(); // Sắp xếp thứ tự ưu tiên
         void add_task(); // Thêm
         void display() const; // Hiển thị - chỉ xem
-        void sua_task(); // Sửa task
-        void gia_han(); // Gia hạn
-        void deleted(); // Xóa 1 task trong danh sách
+        void display_done() const; // Hiển thị task done
+        void display_all() const; // Hiển thị tất cả
+        void update_task(); // Cập nhật task
         void erase_from_x_to_y(); // Xóa trong khoảng được chọn
         void undo();
         void Redo();
@@ -33,5 +34,7 @@ class Project{
         void saveToFile(); // Lưu ds vào file
         void loadFromFile(); // Đọc ds từ file                                                                                                                   VB=
         void sleep(int s); // Gọi sleep nhanh
-        void back_to_menu(std::string text);
+        // Chỉ hiển thị text thông báo -> chỉ xem
+        // và không được dùng để tham chiếu ở đâu nên không cần &
+        void back_to_menu(const std::string text); 
 };
