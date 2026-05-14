@@ -81,51 +81,69 @@ void Project::update_task(){
     int choose_task;
     // Chọn task muốn sửa, nếu sai sẽ báo thất bại và quay về main menu
     choose_task = t.correct_val("Chon task muon sua: ", 0, (int)ds.size()-1);
-    // Nếu đúng -> Lưu trước khi sửa.
-    history.push(ds);
+    if (choose_task == -1) sleep(2);
+    if (choose_task != -1){
+        // Nếu đúng -> Lưu trước khi sửa.
+        history.push(ds);
 
-    // Xử lý nếu nội dung được chọn không có trong menu
-    // Chọn loại field muốn sửa:
-    std::string choose_field;
-    std::cout<<"1. Sua Task Name\n2. Sua Deadline\n3. Xac nhan da hoan thanh\n4. Gia han\n5. Xoa\n";
-    std::cin>>choose_field;
-    std::cin.ignore();
-    // Nếu chọn field 1
-    if (choose_field == "1") {
-        std::string new_name;
-        std::cout<<"Nhap ten task moi: ";
-        std::getline(std::cin, new_name);
-        ds[choose_task].setTaskName(new_name);
-        std::cout<<"Sua ten task thanh cong!!\n";
+        // Xử lý nếu nội dung được chọn không có trong menu
+        // Chọn loại field muốn sửa:
+        std::string choose_field;
+        int i = 3;
+        // Nếu chọn field 1
+        do{
+            system("cls");
+            std::cout<<"===UPDATE MENU===\n\n";
+            std::cout<<"1. Rename\n2. Sua Deadline\n3. Xac nhan da hoan thanh\n4. Gia han\n5. Xoa\n0. Back to Main Menu\n";
+            std::cout<<"Chon: ";
+            std::cin>>choose_field;
+            std::cin.ignore();
+            if (choose_field == "0") {
+                std::cout<<"Back to Main Menu\n";
+                break;
+            }
+            else if (choose_field == "1") {
+                std::string new_name;
+                std::cout<<"Nhap ten task moi: ";
+                std::getline(std::cin, new_name);
+                ds[choose_task].setTaskName(new_name);
+                std::cout<<"Sua ten task thanh cong!!\n";
+            }
+            // Chọn 2 thì nhập deadline
+            else if (choose_field == "2") {
+                ds[choose_task].input_time();
+                std::cout<<"Sua deadline thanh cong!!\n";
+            }
+            // Chọn 3 để xác nhận task đã hoàn thành
+            else if (choose_field == "3") {
+                ds[choose_task].markAsDone();
+                std::cout<<"Xac nhan Task: "<<choose_task<<" da hoan thanh!!!";
+            }
+            // Gia hạn
+            else if (choose_field == "4") {
+                ++ds[choose_task]; // gia hạn ở vị trí được chọn
+                std::cout<<"Gia han thanh cong!!\n";
+            }
+            // Xoa
+            else if (choose_field == "5") {
+                ds.erase(ds.begin() + choose_task);
+                std::cout<<"Xoa task thanh cong!!\n";
+            }
+            // Nhập ký tự khác thì return
+            else {
+                std::cout<<"[ERROR] Field khong ton tai!! Con "<<i<<" lan nhap\n";
+                sleep(1);
+            }
+            i--;
+        }
+        // Nếu nhập linh tinh thì có 3 cơ hội
+        // Nếu nhập 0 thì thoát về main menu ngay
+        while (choose_field != "0" && i != 0); 
+        priority(); // Sắp xếp lại
+        redo.push(ds); // Lưu vào redo
+        saveToFile(); // Lưu vào ổ đĩa
+        sleep(2);
     }
-    // Chọn 2 thì nhập deadline
-    else if (choose_field == "2") {
-        ds[choose_task].input_time();
-        std::cout<<"Sua deadline thanh cong!!\n";
-    }
-    // Chọn 3 để xác nhận task đã hoàn thành
-    else if (choose_field == "3") {
-        ds[choose_task].markAsDone();
-        std::cout<<"Xac nhan Task: "<<choose_task<<" da hoan thanh!!!";
-    }
-    // Gia hạn
-    else if (choose_field == "4") {
-        ++ds[choose_task]; // gia hạn ở vị trí được chọn
-        std::cout<<"Gia han thanh cong!!\n";
-    }
-    // Xoa
-    else if (choose_field == "5") {
-        ds.erase(ds.begin() + choose_task);
-        std::cout<<"Xoa task thanh cong!!\n";
-    }
-    // Nhập ký tự khác thì return
-    else {
-        std::cout<<"[ERROR] Field không tồn tại!!";
-    }
-    priority(); // Sắp xếp lại
-    redo.push(ds); // Lưu vào redo
-    saveToFile(); // Lưu vào ổ đĩa
-    sleep(2);
 }
 
 // Xóa trong khoảng được chọn

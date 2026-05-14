@@ -66,3 +66,5 @@ Nếu nhập đúng int và là số > now -> thực thi tính năng cộng dồ
 18. Sửa tùy chọn trên menu: xóa lựa chọn gia hạn, xóa trong main menu -> đời vào Update Task
 ## 14/5
 19. Fix: Tạo giới hạn đúng chuẩn cho ngày, tháng, năm để không tự cộng dồn sai ngày
+20. Fix: Thêm phím 0 Exit trong Update Task, chọn task sai 3 lần sẽ quay về main menu, chọn update menu sai 3 lần để quay về main menu hoặc bấm 0 để lập tức về main menu
+21. Dời TL lên trên Main Menu

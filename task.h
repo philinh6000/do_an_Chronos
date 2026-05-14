@@ -12,7 +12,14 @@ class Task{
         time_t completed_date; // Kiểm tra thời gian hoàn thành
         static const int DaysInMonth[]; // Tạo mảng đặt ngày trong tháng để lấy ngày chuẩn
         bool is_leap(int y) const; // Tạo bool xác nhận có phải năm nhuận hay không
+        // Điểm mức độ ưu tiên và điểm khẩn cấp
+        int priority_score; // Điểm ưu tiên từ 1-5 do user nhập, không đổi
+        int hoursleft; // Số ngày còn lại của task
+        
     public:
+        // Điểm mức độ ưu tiên và điểm khẩn cấp
+        int urgency_score() const; // Điểm khẩn cấp thay đổi theo realtime mỗi lần gọi
+        //---
         int getDay(int m, int y) const; // Lấy được ngày trong tháng theo năm.
         // Input
         void input(); // Hàm nhập cha
