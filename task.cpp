@@ -2,15 +2,40 @@
 #include "task.h"
 #include <iostream>
 #include <algorithm>
-#include <vector>
 #include <iomanip> // Để dùng setfill và setw thêm số, đảm bảo định dạng 2 số cho time.
 // Xử lý mức độ ưu tiên
-// 1. Nhập điểm ưu tiên
-void Task::input_priority(){
-    std::cout<<"Chon muc do uu tien:\n1. VERY LOW\n2. LOW\n 3. MEDIUM\n4. HIGH\n5. CRITICAL\n";
-    priority_score = correct_val("Choose: ",1, 5);
-}
+const std::string Task::Priority[] = {"0", "VERY LOW", "LOW", "MEDIUM", "HIGH", "CRITICAL"};
+std::string Task::output_Priority() const{return Priority[priority_score];}
 
+// Tính điểm khẩn cấp
+double Task::urgency_score() const{
+    // 1. Cập nhật thời gian hiện tại realtime
+    time_t now = time(0);
+
+    // 2. Nếu deadline < now -> quá hạn, uscore = 100
+    if (deadline <= now) return 100.0;
+
+    // 3. Tính thông số thời gian dựa trên thời gian gốc:
+    // a. Lấy deadline - begin ra tổng thời gian khi tạo task
+    double total_seconds = difftime(deadline, begin_time);
+    // bọc an toàn:
+    if (total_seconds <= 0) return 100.0;
+    // b. Lấy now (realtime) - begin ra số giây đã trôi qua
+    double second_elapse = difftime(now, begin_time);
+
+
+    // 4. Tính pscore và sscore sao cho pscore + sscore = 100
+    // a. pscore từ 12 đến tối đa 60 điểm -> sscore từ 88 -> 40 điểm
+    double pscore = (float)priority_score/5.0 * 60; // VD: prio 1 -> pscore = 12
+    double sscore = 100.0-pscore;
+
+    // 5. Số điểm tăng mỗi giây (điểm cố định, tính trên time cố định)
+    // Lấy điểm giây (88->40) chia cho tổng số giây = điểm/giây
+    double second_rate = sscore/total_seconds;
+
+    // 6. uscore = pscore + (thời gian đã qua * điểm mỗi giây) <- ra tổng số điểm trên thời gian đã qua
+    return pscore + (second_elapse * second_rate);
+}
 
 // Xử lý ngày theo năm, tháng
 // 1. Tạo mảng chứa ngày trong tháng
@@ -50,6 +75,12 @@ int Task::correct_val(const std::string &text, const int min_val, const int max_
     // Sau vòng lặp vẫn sai, thì trả về giá trị -1 để dánh dấu xử lý trong deadline
     return -1;
 }
+// Nhập Priority
+void Task::input_priority(){
+    std::cout<<"Chon muc do uu tien:\n1. VERY LOW\n2. LOW\n3. MEDIUM\n4. HIGH\n5. CRITICAL\n";
+    priority_score = correct_val("Choose: ",1, 5);
+}
+
 // Nhập tên task name
 void Task::input_task_name(){
     std::cout<<"Nhap ten task bang chu khong dau: ";
@@ -60,6 +91,7 @@ void Task::input_task_name(){
 void Task::input_time(){
     int d, m, y, hr, min;
     // Lấy thời gian hiện tại chuẩn bị so sánh từng phần tử của deadline với now.
+    begin_time = time(0); // Đánh dấu thời gian tạo task
     time_t now = time(0);
     struct tm* thoigian = localtime(&now);
     int nam_hien_tai = thoigian->tm_year+1900; // cắt lấy năm biến thành số để so sánh với y.
@@ -141,6 +173,7 @@ void Task::markAsDone(){
 
 // Đặt điều kiện so sánh nếu deadline < hơn.
 bool Task::operator<(const Task& other) const{
+    if (this->deadline == other.deadline) return this->urgency_score() > other.urgency_score();
     return this->deadline < other.deadline; // Ngày nhỏ hơn thì ưu tiên hơn
 }
 
@@ -181,12 +214,14 @@ void Task::output() const{
     int gio_deadline = thoigian->tm_hour;
     int phut_deadline = thoigian->tm_min;
 
-    std::cout<<task_name<<" | "
+    std::cout<<"TASK NAME: "<<task_name<<" | DEADLINE: "
     <<std::setfill('0')<<std::setw(2)<<ngay_deadline<<"/" 
     <<std::setfill('0')<<std::setw(2)<<thang_deadline<<"/" 
     <<nam_deadline<<" " 
     <<std::setfill('0')<<std::setw(2)<<gio_deadline<<":"
-    <<std::setfill('0')<<std::setw(2)<<phut_deadline<<"\n";
+    <<std::setfill('0')<<std::setw(2)<<phut_deadline<<" | PRIORITY: "
+    <<output_Priority()<<" | PRIORITY SCORE: "
+    <<std::fixed<<std::setprecision(1)<<urgency_score()<<"\n";
 }
 
 void Task::outputDone() const{
@@ -216,12 +251,14 @@ void Task::outputDone() const{
     int phut_cd = cd->tm_min;
 
     // In ra
-    std::cout<<task_name<<" | "
+    std::cout<<"TASK NAME: "<<task_name<<" | DEADLINE: "
     <<std::setfill('0')<<std::setw(2)<<ngay_deadline<<"/" 
     <<std::setfill('0')<<std::setw(2)<<thang_deadline<<"/" 
     <<nam_deadline<<" " 
     <<std::setfill('0')<<std::setw(2)<<gio_deadline<<":"
-    <<std::setfill('0')<<std::setw(2)<<phut_deadline<<" - COMPLETED DATE: "
+    <<std::setfill('0')<<std::setw(2)<<phut_deadline<<" | PRIORITY: "
+    <<output_Priority()<<" | PRIORITY SCORE: "
+    <<std::fixed<<std::setprecision(1)<<urgency_score()<<" - COMPLETED DATE: "
     <<std::setfill('0')<<std::setw(2)<<ngay_cd<<"/" 
     <<std::setfill('0')<<std::setw(2)<<thang_cd<<"/" 
     <<nam_cd<<" " 
@@ -237,9 +274,11 @@ void Task::setFakeData(int i){
 }
 
 // Lấy task name và dl dùng nhanh
-void Task::setDataChuan(const std::string &name, const time_t dl, const bool isD, const time_t cd){
+void Task::setDataChuan(const time_t bg, const std::string &name, const time_t dl, const int psc, const bool isD, const time_t cd){
+    begin_time = bg; // Lấy thông tin begin date
     task_name = name; // Lấy task_name = thông tin string mới
     deadline = dl; // Lấy deadline = thông tin time mới
+    priority_score = psc; // Lấy thông tin priority score
     is_done = isD; // Lấy is_done = thông tin bool
     completed_date = cd; // Lấy ngày hoàn thành = time
 }

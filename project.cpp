@@ -270,7 +270,7 @@ void Project::saveToFile(){
             // Lọc bỏ dòng data rác với deadline = -1 để an toàn
             if (!t.isValid()) continue;
             // Ghi lại theo dịnh dạng task_name | deadline vào f
-            f<<t.getTaksName()<<" | "<<t.getDeadline()<<" | "<<t.GetBoolDone()<<" | "<<t.GetCD()<<"\n";
+            f<<t.getBeginDate()<<" | "<<t.getTaksName()<<" | "<<t.getDeadline()<<" | "<<t.getPriority()<<" | "<<t.GetBoolDone()<<" | "<<t.GetCD()<<"\n";
         }
         // Sau khi lưu xong thì đóng f an toàn
         f.close();
@@ -293,15 +293,21 @@ void Project::loadFromFile(){
         std::stringstream ss(line); // Đưa từng line trong f vào ss
         // Tạo biến lấy dữ liệu
         std::string name, temp; // Đặt temp để lấy string dl, cd, isD chuyển về đúng dạng
-        time_t dl, cd;
+        time_t bg, dl, cd;
+        int psc;
         bool isD;
         // Đọc từng phần được cắt nhau bởi dấu | bằng getline
         // dùng std::ws để xóa khoảng trắng thừa
+        std::getline(ss >> std::ws, temp, '|'); // Lấy được begin date
+        bg = std::stoll(temp); // Chuyển temp từ string thành ll lấy bg
         std::getline(ss >> std::ws, name, '|'); // Lấy được tên 
-        // Dùng temp lấy dl ở | thứ 2
+        // Dùng temp lấy dl
         std::getline(ss >> std::ws, temp, '|'); 
         // Chuyển về dl
         dl = std::stoll(temp); // Chuyển temp từ string thành ll lấy dl
+        // Dùng temp lấy prio
+        std::getline(ss >> std::ws, temp, '|');
+        psc = std::stoi(temp);
         // Tương tự với isD và cd
         std::getline(ss >> std::ws, temp, '|');
         isD = (std::stoi(temp)) != 0; // Chuyển str thành int lấy bool
@@ -314,7 +320,7 @@ void Project::loadFromFile(){
         if (dl <= 0) continue;
         // Đặt Task t để đưa thành từng Task
         Task t;
-        t.setDataChuan(name, dl, isD, cd); // Đưa name và dl vào task_name và dl
+        t.setDataChuan(bg, name, dl, psc, isD, cd); // Đưa name và dl vào task_name và dl
         ds.push_back(t); // đưa từng t vào ds vector trong RAM
     }
     // Load xong hết vào RAM thì đóng file an toàn

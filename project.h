@@ -3,7 +3,6 @@
 #include "task.h"
 #include <stack>
 #include <algorithm>
-#include <vector>
 #include <fstream> // Đọc, ghi file
 #include <sstream> // Dùng stringstream cắt chuỗi trong file
 #include <cstdlib> // ép tạo path & folder lưu file = lênh mkdir
