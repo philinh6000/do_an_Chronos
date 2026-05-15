@@ -4,6 +4,14 @@
 #include <algorithm>
 #include <vector>
 #include <iomanip> // Để dùng setfill và setw thêm số, đảm bảo định dạng 2 số cho time.
+// Xử lý mức độ ưu tiên
+// 1. Nhập điểm ưu tiên
+void Task::input_priority(){
+    std::cout<<"Chon muc do uu tien:\n1. VERY LOW\n2. LOW\n 3. MEDIUM\n4. HIGH\n5. CRITICAL\n";
+    priority_score = correct_val("Choose: ",1, 5);
+}
+
+
 // Xử lý ngày theo năm, tháng
 // 1. Tạo mảng chứa ngày trong tháng
 const int Task::DaysInMonth[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -122,6 +130,7 @@ void Task::input_flag_done(){
 void Task::input(){
     input_task_name();
     input_time();
+    input_priority();
     input_flag_done();
 }
 // Đánh dấu hoàn thành

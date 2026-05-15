@@ -14,10 +14,10 @@ class Task{
         bool is_leap(int y) const; // Tạo bool xác nhận có phải năm nhuận hay không
         // Điểm mức độ ưu tiên và điểm khẩn cấp
         int priority_score; // Điểm ưu tiên từ 1-5 do user nhập, không đổi
-        int hoursleft; // Số ngày còn lại của task
-        
     public:
         // Điểm mức độ ưu tiên và điểm khẩn cấp
+        void input_priority(); // Hàm nhập điểm priority
+        std::string output_priority() const; // In loại priority từ điểm
         int urgency_score() const; // Điểm khẩn cấp thay đổi theo realtime mỗi lần gọi
         //---
         int getDay(int m, int y) const; // Lấy được ngày trong tháng theo năm.
