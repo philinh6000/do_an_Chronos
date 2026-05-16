@@ -74,3 +74,14 @@ Nếu nhập đúng int và là số > now -> thực thi tính năng cộng dồ
 ## 16/5
 1. Thêm mức độ ưu tiên: private -> user chọn -> if 1: VERY LOW - 5: CRITICAL
 2. Thêm điểm khẩn cấp theo thời gian thực (tính theo giây)
+## 17/5 - Meeting
+# Testcase & bug:
+1. Loi xoa tu x den y: Nhập bắt đầu không hợp lệ vẫn rơi xuống kết thúc -> DONE - 5/17/26: if x!=-1 mới xuống
+2. Crash & Hỏng data khi tạo demo - DONE - 5/17/26: Thêm điểm prio mặc dịnh 1 + begin time
+3. Khi input, nhập dealine lỗi vẫn rơi xuống nhập priority - DONE - 5/17/26: if deadline != -1 mới xuống.
+4. Các tính năng trong Update: Phải bấm 3 lần mới quay ra Main Menu. - DONE - 5/17/26: Thêm điều kiện & các phím trong menu trong while
+Nếu là gia hạn bị tăng 3 ngày vì bấm 3 lần. Nếu bấm gia hạn 1 lần rồi bấm 0 để back để thoát thì tăng 1 ngày. - DONE
+
+# Follow-up:
+1. Thêm nút refresh để tải lại tl ở Main Menu nhanh. -> DONE - 5/17/26: refresh 1s để thấy thay đổi của uscore
+2. Tắt display khi chọn xóa từ x đến y -> DONE - 5/17/26

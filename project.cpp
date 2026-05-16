@@ -44,7 +44,7 @@ void Project::display_done() const{
     std::cout<<"\n===COMPLETED TASK===\n\n";
     int i = 0;
     for (const auto &t:ds){
-        // Nếu task chưa done thì in ra
+        // Nếu task done thì in ra
         if (t.GetBoolDone()){
             std::cout<<"Vi tri Task: "<<i<<". ";
             t.outputDone();
@@ -138,7 +138,7 @@ void Project::update_task(){
         }
         // Nếu nhập linh tinh thì có 3 cơ hội
         // Nếu nhập 0 thì thoát về main menu ngay
-        while (choose_field != "0" && i != 0); 
+        while ((choose_field != "0" && choose_field !="1" && choose_field != "2" && choose_field != "3" && choose_field != "4" && choose_field != "5") && i != 0); 
         priority(); // Sắp xếp lại
         redo.push(ds); // Lưu vào redo
         saveToFile(); // Lưu vào ổ đĩa
@@ -148,28 +148,32 @@ void Project::update_task(){
 
 // Xóa trong khoảng được chọn
 void Project::erase_from_x_to_y(){
+    display_done();
     std::string confirm;
     Task t;
     int x, y;
     x = t.correct_val("Chon vi tri bat dau muon xoa: ", 0, (int)ds.size()-1);
-    y = t.correct_val("Chon vi tri ket thuc muon xoa: ", 0, (int)ds.size()-1);
-    if (x >= 0 && y < (int)ds.size() && x <= y){
-        std::cout<<"Bam Y de xac nhan xoa! Bam phim khac de tu choi!\n";
-        std::cin>>confirm;
-        if (confirm == "y" || confirm == "Y"){
-            // Xóa từ vị trí bắt đầu x, đến vị trí y.
-            // Vì erase sẽ dừng trước end nên +1 để xóa được ở vị trí y.
-            history.push(ds);
-            ds.erase(ds.begin() + x, ds.begin() + y + 1);
-            redo.push(ds); // Lưu vào snapshot
-            saveToFile(); // Lưu vào file
-            std::cout<<"Xoa task thanh cong!!\n";
-            sleep(2);
-        }else {
-            std::cout<<"Xoa that bai!!\n";
-            sleep(2);
+    if (x != -1){
+        y = t.correct_val("Chon vi tri ket thuc muon xoa: ", 0, (int)ds.size()-1);
+        if (x >= 0 && y < (int)ds.size() && x <= y){
+            std::cout<<"Bam Y de xac nhan xoa! Bam phim khac de tu choi!\n";
+            std::cin>>confirm;
+            if (confirm == "y" || confirm == "Y"){
+                // Xóa từ vị trí bắt đầu x, đến vị trí y.
+                // Vì erase sẽ dừng trước end nên +1 để xóa được ở vị trí y.
+                history.push(ds);
+                ds.erase(ds.begin() + x, ds.begin() + y + 1);
+                redo.push(ds); // Lưu vào snapshot
+                saveToFile(); // Lưu vào file
+                std::cout<<"Xoa task thanh cong!!\n";
+                sleep(2);
+            }else {
+                std::cout<<"Xoa that bai!!\n";
+                sleep(2);
+            }
         }
     }
+    else sleep(2);
 }
 
 // Hoàn tác

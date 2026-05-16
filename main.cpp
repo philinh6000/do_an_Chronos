@@ -12,7 +12,7 @@ int main(){
         system("cls");
         p.display(); // Hiển thị lại tl để chọn Menu.
         std::cout<<"\n===CHRONOS MENU===\n\n";
-        std::cout<<"1. Them\n2. Xem Completed Task\n3. Cap nhat\n4. Xoa trong khoang duoc chon\n5. Undo\n6. Redo\n7. Demo\n0. Thoat\n";
+        std::cout<<"1. Them\n2. Xem Completed Task\n3. Cap nhat\n4. Xoa trong khoang duoc chon\n5. Undo\n6. Redo\n7. Demo\n8. Refresh\n0. Thoat\n";
         std::cout<<"Chon: ";
         std::cin>>choose;
         std::cin.ignore(); // xóa enter cho lần tiếp.
@@ -42,16 +42,14 @@ int main(){
             p.update_task();
         }
         // 5. Xóa trong khoảng được chọn
-        else if (choose == "4"){
-            p.display(); // Xem danh sách để chọn xóa
-            p.erase_from_x_to_y();
-        }
+        else if (choose == "4")p.erase_from_x_to_y();
         // 6. Hoàn tác
         else if (choose == "5") p.undo();
         // 7. Redo
         else if (choose == "6") p.Redo();
         // 8. Demo thử với 10000 task một lượt
         else if (choose == "7") p.demoOverflow();
+        else if (choose == "8") p.sleep(1);
         else {
             std::cout<<"Vui long nhap so trong Menu!";
             p.sleep(2);

@@ -162,8 +162,10 @@ void Task::input_flag_done(){
 void Task::input(){
     input_task_name();
     input_time();
-    input_priority();
-    input_flag_done();
+    if (deadline != -1){
+        input_priority();
+        input_flag_done();
+    }
 }
 // Đánh dấu hoàn thành
 void Task::markAsDone(){
@@ -267,8 +269,10 @@ void Task::outputDone() const{
 }
 
 void Task::setFakeData(int i){
+    begin_time = time(0);
     task_name = "Task thu " + std::to_string(i); // task name = số thứ tự
     deadline = time(0) + (i*3600); // deadline lấy hiện tại + 1hr mỗi lần tạo
+    priority_score = 1;
     is_done = false;
     completed_date = 0;
 }
