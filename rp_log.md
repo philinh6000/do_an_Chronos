@@ -85,3 +85,7 @@ Nếu là gia hạn bị tăng 3 ngày vì bấm 3 lần. Nếu bấm gia hạn 
 # Follow-up:
 1. Thêm nút refresh để tải lại tl ở Main Menu nhanh. -> DONE - 5/17/26: refresh 1s để thấy thay đổi của uscore
 2. Tắt display khi chọn xóa từ x đến y -> DONE - 5/17/26
+
+---
+## 18/5:
+1. Fix nhập giờ phút đúng thời gian.

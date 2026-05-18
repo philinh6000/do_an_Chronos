@@ -2,7 +2,6 @@
 #pragma once // Read-Only 1 time
 #include <string>
 #include <ctime>
-#include <vector>
 
 class Task{
     private:
@@ -14,7 +13,7 @@ class Task{
         static const int DaysInMonth[]; // Tạo mảng đặt ngày trong tháng để lấy ngày chuẩn
         bool is_leap(int y) const; // Tạo bool xác nhận có phải năm nhuận hay không
         // Điểm mức độ ưu tiên và điểm khẩn cấp
-        time_t begin_time; // Lấy giờ bắt đầu
+        time_t begin_time; // Lấy giờ bắt đầu tạo task
         int priority_score; // Điểm ưu tiên từ 1-5 do user nhập, không đổi
         static const std::string Priority[]; // Tạo mảng đặt mức độ ưu tiên
     public:

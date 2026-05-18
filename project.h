@@ -2,6 +2,7 @@
 #pragma once
 #include "task.h"
 #include <stack>
+#include <vector>
 #include <algorithm>
 #include <fstream> // Đọc, ghi file
 #include <sstream> // Dùng stringstream cắt chuỗi trong file

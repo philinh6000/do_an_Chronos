@@ -128,8 +128,8 @@ void Task::input_time(){
     if (d == -1) {deadline = -1; return;}
 
     // Chọn giờ mặc định hoặc nhập giờ phút: Nếu >= 24 giờ thì tự động lấy giờ mặc định
-    if (y > nam_hien_tai || m > thang_hien_tai || d > ngay_hien_tai) hr = correct_val("Nhap gio (Nhap >= 24 de lay gio mac dinh 23:59): ", 0, 100);
-    else hr = correct_val("Nhap gio (Nhap >= 24 de lay gio mac dinh 23:59): ", gio_hien_tai, 100);
+    if (y > nam_hien_tai || m > thang_hien_tai || d > ngay_hien_tai) hr = correct_val("Nhap gio (Nhap 24 de lay gio mac dinh 23:59): ", 0, 24);
+    else hr = correct_val("Nhap gio (Nhap 24 de lay gio mac dinh 23:59): ", gio_hien_tai, 24);
 
     if (hr == -1) {deadline = -1; return;} // Nếu giờ nhập ra sai thì return
     // Nếu ra đúng mà số giờ >= 24 thì lấy thời gian mặc định, bỏ qua nhập phút.
@@ -139,8 +139,8 @@ void Task::input_time(){
     }
     // Ngược lại thì hr vẫn giữ nguyên và tiến đến nhập phút
     else{
-        if (y > nam_hien_tai || m > thang_hien_tai || d > ngay_hien_tai || hr > gio_hien_tai) min = correct_val("Nhap phut: ", 0, 100);
-        else min = correct_val("Nhap phut: ", phut_hien_tai + 1, 100); // Lấy dư ra 1 phút so với hiện tại tránh lệch giờ
+        if (y > nam_hien_tai || m > thang_hien_tai || d > ngay_hien_tai || hr > gio_hien_tai) min = correct_val("Nhap phut: ", 0, 59);
+        else min = correct_val("Nhap phut: ", phut_hien_tai, 59);
         if (min == -1) {deadline = -1; return;}}
     // Nếu đúng hết thì xử lý: Chuyển đổi thời gian từ số nguyên thành giờ
     struct tm t = {0};
@@ -233,25 +233,41 @@ void Task::outputDone() const{
     time_t now = time(0); // Lấy thời gian hiện tại
     if (deadline < now) std::cout<<"[OVERDUE] ";
     // Chuyển deadline thành dạng chuẩn dd/mm/yyyy hr:min
-    struct tm* thoigian = localtime(&deadline);
-    int nam_deadline = (thoigian->tm_year+1900); // Tương tự, ngược lại lúc chuyển qua giây
-    int thang_deadline = (thoigian->tm_mon+1); // bỏ trong ngoặc để thực hiện +1, trả lại số nguyên đúng (trong C++, tháng bắt đầu từ 0)
-    int ngay_deadline = thoigian->tm_mday; // dùng -> để lấy tương tự this, đưa thời gian thực tế để chuyển đổi
-    int gio_deadline = thoigian->tm_hour;
-    int phut_deadline = thoigian->tm_min;
+    struct tm thoigian = *localtime(&deadline);
+    int nam_deadline = (thoigian.tm_year+1900); // Tương tự, ngược lại lúc chuyển qua giây
+    int thang_deadline = (thoigian.tm_mon+1); // bỏ trong ngoặc để thực hiện +1, trả lại số nguyên đúng (trong C++, tháng bắt đầu từ 0)
+    int ngay_deadline = thoigian.tm_mday;
+    int gio_deadline = thoigian.tm_hour;
+    int phut_deadline = thoigian.tm_min;
     // Bọc an toàn với cd = 0
     if (completed_date <= 0){
         std::cout<<" - COMPLETED DATE: N/A\n";
         return;
     }
     // Chuyển completed date thành dạng chuẩn
-    struct tm* cd = localtime(&completed_date);
-    int nam_cd = (cd->tm_year+1900); // Tương tự, ngược lại lúc chuyển qua giây
-    int thang_cd = (cd->tm_mon+1); // bỏ trong ngoặc để thực hiện +1, trả lại số nguyên đúng (trong C++, tháng bắt đầu từ 0)
-    int ngay_cd = cd->tm_mday; // dùng -> để lấy tương tự this, đưa thời gian thực tế để chuyển đổi
-    int gio_cd = cd->tm_hour;
-    int phut_cd = cd->tm_min;
+    struct tm cd = *localtime(&completed_date);
+    int nam_cd = (cd.tm_year+1900);
+    int thang_cd = (cd.tm_mon+1);
+    int ngay_cd = cd.tm_mday;
+    int gio_cd = cd.tm_hour;
+    int phut_cd = cd.tm_min;
+    /*Dấu * ở kiểu dữ liệu và * ở localtime:
+    1. Dấu * đặt ở kiểu dữ liệu (struct tm* thoigian) — Con trỏ (Pointer):
+    Nghĩa là biến thoigian không phải là một cái thùng chứa ngày tháng,
+    mà nó chỉ là một địa chỉ hướng tới một cái thùng localtime trong bộ nhớ của máy tính.
+    Vì nó là "địa chỉ", nên trong C++, bắt buộc phải dùng toán tử -> để bảo máy tính:
+    "Hãy đi theo hướng mũi tên này, tìm đến cái thùng kia và lấy thuộc tính tm_year".
 
+    2. Dấu * đặt ở vế phải (*localtime(&deadline)) — Giải tham chiếu (Dereference)
+    Hàm localtime trả về một "Mũi tên". Nhưng khi thêm dấu * ở ngay trước nó, ta đang thực hiện lệnh:
+    "Hãy đi theo mũi tên đó ngay lập tức, lấy toàn bộ nội dung trong cái thùng đó ra đây!".
+    Sau đó, ta gán nó vào struct tm thoigian (không có dấu * ở kiểu dữ liệu).
+    Lúc này, thoigian đã trở thành một "Cái thùng thực sự" độc lập, lưu bản sao dữ liệu an toàn 
+    trong vùng nhớ của riêng nó, không sợ bị ai ghi đè nữa.
+    Vì nó đã là một "Cái thùng thực sự" (biến) chứ không phải mũi tên nữa, 
+    ta phải dùng Dấu chấm (.) để mở thùng lấy đồ: thoigian.tm_year. 
+    Toán tử -> sẽ bị báo lỗi vì máy tính bảo: 
+    "Đây là cái thùng rồi, có phải mũi tên đâu mà bắt tôi đi theo!".*/
     // In ra
     std::cout<<"TASK NAME: "<<task_name<<" | DEADLINE: "
     <<std::setfill('0')<<std::setw(2)<<ngay_deadline<<"/" 
