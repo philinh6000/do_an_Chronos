@@ -9,7 +9,11 @@ int main(){
     std::string choose;
     while (true){
         // Dọn dẹp sạch lựa chọn trước để chuẩn bị cho lựa chọn tiếp theo.
-        system("cls");
+        #ifdef _WIN32
+            system("cls");
+        #else
+            system("clear"); // MAC thì dùng clear
+        #endif
         p.display(); // Hiển thị lại tl để chọn Menu.
         std::cout<<"\n===CHRONOS MENU===\n\n";
         std::cout<<"1. Them\n2. Xem Completed Task\n3. Cap nhat\n4. Xoa trong khoang duoc chon\n5. Undo\n6. Redo\n7. Demo\n8. Refresh\n0. Thoat\n";

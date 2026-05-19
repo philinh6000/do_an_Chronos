@@ -3,7 +3,11 @@
 #include <iostream>
 #include <thread> // Để dùng sleep thay cho back_to_menu
 #include <chrono> // Để dùng sleep thay cho back_to_menu
-#include <windows.h> // Dùng để chạy SetFileAttributes ẩn file
+#ifdef _WIN32
+    #include <windows.h> // Dùng để chạy SetFileAttributes ẩn file
+#else
+    #include <unistd.h>
+#endif
 
 //=== UTILS ===
 // Sắp xếp task thành priority

@@ -91,3 +91,4 @@ Nếu là gia hạn bị tăng 3 ngày vì bấm 3 lần. Nếu bấm gia hạn 
 1. Fix nhập giờ phút đúng thời gian.
 2. Change: Lưu file data ngay nơi chạy CLI, không cần set folder -> ẩn file data ở cả Window và MAC.
 3. Thêm: bọc trong loadfromfile để dù sau này thêm bao nhiêu field cũng không crash lỗi data.
+4. Fix: Bọc Win và MAC trong ifdef-endif
