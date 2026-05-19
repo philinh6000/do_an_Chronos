@@ -254,20 +254,22 @@ void Task::outputDone() const{
     /*Dấu * ở kiểu dữ liệu và * ở localtime:
     1. Dấu * đặt ở kiểu dữ liệu (struct tm* thoigian) — Con trỏ (Pointer):
     Nghĩa là biến thoigian không phải là một cái thùng chứa ngày tháng,
-    mà nó chỉ là một địa chỉ hướng tới một cái thùng localtime trong bộ nhớ của máy tính.
-    Vì nó là "địa chỉ", nên trong C++, bắt buộc phải dùng toán tử -> để bảo máy tính:
-    "Hãy đi theo hướng mũi tên này, tìm đến cái thùng kia và lấy thuộc tính tm_year".
+    mà nó chỉ là một con trỏ hướng tới một cái thùng localtime trong bộ nhớ của máy tính.
+    Vì nó là "con trỏ", nên trong C++, với struc bắt buộc phải dùng toán tử ->
+    Khi đó, thoigian và cd cùng trỏ tới 1 hộp localtime -> dễ bị ghi đè.
 
     2. Dấu * đặt ở vế phải (*localtime(&deadline)) — Giải tham chiếu (Dereference)
-    Hàm localtime trả về một "Mũi tên". Nhưng khi thêm dấu * ở ngay trước nó, ta đang thực hiện lệnh:
-    "Hãy đi theo mũi tên đó ngay lập tức, lấy toàn bộ nội dung trong cái thùng đó ra đây!".
-    Sau đó, ta gán nó vào struct tm thoigian (không có dấu * ở kiểu dữ liệu).
+    Hàm localtime trả về một "địa chỉ" của time_t, nên bắt buộc trong localtime dùng &
+    nó không nhận giá trị trực tiếp.
+    Nhưng khi thêm dấu * ở ngay trước nó
+    -> * giải tham chiếu con trỏ mà localtime trả về
+    <=> localtime trả về địa chỉ ->, * đi theo địa chỉ -> lấy nội dung ra.
+    -> gán nó vào struct tm thoigian (không có dấu * ở kiểu dữ liệu)
     Lúc này, thoigian đã trở thành một "Cái thùng thực sự" độc lập, lưu bản sao dữ liệu an toàn 
     trong vùng nhớ của riêng nó, không sợ bị ai ghi đè nữa.
-    Vì nó đã là một "Cái thùng thực sự" (biến) chứ không phải mũi tên nữa, 
-    ta phải dùng Dấu chấm (.) để mở thùng lấy đồ: thoigian.tm_year. 
-    Toán tử -> sẽ bị báo lỗi vì máy tính bảo: 
-    "Đây là cái thùng rồi, có phải mũi tên đâu mà bắt tôi đi theo!".*/
+    Vì nó đã là một "Cái thùng thực sự" (biến) chứ không phải địa chỉ nữa, 
+    ta phải dùng Dấu chấm (.) để mở thùng lấy đồ: thoigian.tm_year
+    VD như: task t; t.add_task() <- đối tượng gọi hàm để dùng thì dùng (.).*/
     // In ra
     std::cout<<"TASK NAME: "<<task_name<<" | DEADLINE: "
     <<std::setfill('0')<<std::setw(2)<<ngay_deadline<<"/" 

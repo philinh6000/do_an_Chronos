@@ -3,6 +3,7 @@
 #include <iostream>
 #include <thread> // Để dùng sleep thay cho back_to_menu
 #include <chrono> // Để dùng sleep thay cho back_to_menu
+#include <windows.h> // Dùng để chạy SetFileAttributes ẩn file
 
 //=== UTILS ===
 // Sắp xếp task thành priority
@@ -249,23 +250,40 @@ void Project::demoOverflow(){
     }
 }
 
-// Lưu ds vào file:
-// 1. Tạo đường dẫn và folder
-void Project::setFolder(){
-    // Khởi tạo đường dẫn
-    std::string command = "mkdir \"C:\\Users\\Public\\Chronos\" > nul 2>&1";
-    // "nul 2>&1" là để lệnh chạy ngầm, không hiện cmd lên.
-    // Trong Window, đường dẫn đúng thường là "\\".
-    // Lệnh mkdir sẽ tự bỏ qua nếu đã có folder nên không cần kiểm tra
-    system(command.c_str()); // Thực thi tạo path ở command
-}
+// Lưu ds vào file ngay tại folder chạy, tạo file ẩn
+// 1. Bọc ẩn file
+/*SetFileAttributesA là hàm của Windows API, nhận 2 tham số:
 
+path.c_str() — path là std::string của C++, 
+nhưng Windows API chỉ hiểu kiểu char* của C thuần.
+.c_str() chuyển đổi string C++ sang dạng đó.
+Chữ A ở cuối SetFileAttributesA nghĩa là dùng bảng mã ASCII
+bản khác là SetFileAttributesW dùng Unicode.
+
+FILE_ATTRIBUTE_HIDDEN — hằng số được định nghĩa sẵn trong windows.h, giá trị là 0x2
+Nó ra lệnh cho Windows đặt thuộc tính ẩn cho file
+giống như user click chuột phải → Properties → tick "Hidden".*/
+void Project::hideFile(const std::string& path) {
+#ifdef _WIN32
+    SetFileAttributesA(path.c_str(), FILE_ATTRIBUTE_HIDDEN);
+#endif
+    // Mac/Linux: file bắt đầu bằng dấu . đã tự ẩn rồi, không cần làm gì thêm
+    // Chỉ bọc lại để an toàn vì MAC không có SetFileAttributesA()
+}
+// Mở ẩn file trước khi ghi để có thể thao tác trên file.
+void UnhideFile(const std::string& path){
+    #ifdef _WIN32
+    SetFileAttributesA(path.c_str(), FILE_ATTRIBUTE_NORMAL);
+    #endif
+}
 // 2. Bắt đầu lưu ds vào file. Có thể tự đặt tên
 void Project::saveToFile(){
-    // Đảm bảo đã có folder
-    setFolder();
-    // Ghi vào file data = ofstream, f là tên path đến data.chronos, có thể đặt tên riêng
-    std::ofstream f("C:/Users/Public/Chronos/data.chronos");
+    // Tạo path lưu ẩn file:
+    // dấu . đằng trước tên, trong MAC và Linux giúp ẩn file, nhưng ở Window chỉ là name.
+    std::string path = ".data.chronos";
+    UnhideFile(path);
+    // Ghi vào file data = ofstream, f là tên path đến data.chronos
+    std::ofstream f(path);
     // Khi f.is_open thì ghi từng dòng của ds vào f
     if (f.is_open()) {
         // Dùng const vì chỉ xem, kiểu auto.
@@ -278,6 +296,8 @@ void Project::saveToFile(){
         }
         // Sau khi lưu xong thì đóng f an toàn
         f.close();
+        // Tự ẩn file ngay sau khi lưu
+        hideFile(path);
         std::cout<<"Da luu file thanh cong!!\n";
     }else std::cout<<"[ERROR]: Khong the mo file de ghi!!\n";
 }
@@ -285,7 +305,9 @@ void Project::saveToFile(){
 // 3. Load data từ f về lại RAM khi mở Chronos
 void Project::loadFromFile(){
     // Dùng ifstream đọc file txt ở path
-    std::ifstream f("C:/Users/Public/Chronos/data.chronos");
+    std::string path = ".data.chronos";
+    UnhideFile(path); // bỏ ẩn để đọc
+    std::ifstream f(path);
     // Nếu f chưa tồn tại -> không có gì để load
     if (!f.is_open()) return;
     // Xóa ds ở RAM hiện tại để chuẩn bị lấy ds ở f vào
@@ -293,42 +315,64 @@ void Project::loadFromFile(){
     std::string line; // Tạo biến line để đọc từng hàng của f
     // Khi trong f còn hàng để bỏ vào line
     while (std::getline(f, line)){
-        // Dùng sstream để cắt chuỗi
-        std::stringstream ss(line); // Đưa từng line trong f vào ss
-        // Tạo biến lấy dữ liệu
-        std::string name, temp; // Đặt temp để lấy string dl, cd, isD chuyển về đúng dạng
-        time_t bg, dl, cd;
-        int psc;
-        bool isD;
-        // Đọc từng phần được cắt nhau bởi dấu | bằng getline
-        // dùng std::ws để xóa khoảng trắng thừa
-        std::getline(ss >> std::ws, temp, '|'); // Lấy được begin date
-        bg = std::stoll(temp); // Chuyển temp từ string thành ll lấy bg
-        std::getline(ss >> std::ws, name, '|'); // Lấy được tên 
-        // Dùng temp lấy dl
-        std::getline(ss >> std::ws, temp, '|'); 
-        // Chuyển về dl
-        dl = std::stoll(temp); // Chuyển temp từ string thành ll lấy dl
-        // Dùng temp lấy prio
-        std::getline(ss >> std::ws, temp, '|');
-        psc = std::stoi(temp);
-        // Tương tự với isD và cd
-        std::getline(ss >> std::ws, temp, '|');
-        isD = (std::stoi(temp)) != 0; // Chuyển str thành int lấy bool
-        /*Đặt cứ != 0 thì là true, == 0 thì false.
-        Nếu có lúc bị lưu thành 5/0 => 5 !=0 vẫn được tính thành true, không bị bỏ qua.*/
-        std::getline(ss >> std::ws, temp);
-        cd = std::stoll(temp); // Chuyển str thành ll lấy cd
+        /*try-catch: thử chạy đoạn code trong try.
+        Nếu có lỗi bất kỳ (thiếu field, sai kiểu dữ liệu, v.v.)
+        thì nhảy xuống catch, bỏ qua dòng đó và đọc dòng tiếp theo.
+        Không crash toàn bộ chương trình.*/
+        try {
+            // Dùng sstream để cắt chuỗi
+            std::stringstream ss(line); // Đưa từng line trong f vào ss
+            // Tạo biến lấy dữ liệu
+            std::string name, temp; // Đặt temp để lấy string dl, cd, isD chuyển về đúng dạng
+            time_t bg = 0, dl = 0, cd = 0;
+            int psc = 1;
+            bool isD = false;
+            // Đọc từng phần được cắt nhau bởi dấu | bằng getline
+            // dùng std::ws để xóa khoảng trắng thừa
 
-        // Lọc bỏ line hỏng
-        if (dl <= 0) continue;
-        // Đặt Task t để đưa thành từng Task
-        Task t;
-        t.setDataChuan(bg, name, dl, psc, isD, cd); // Đưa name và dl vào task_name và dl
-        ds.push_back(t); // đưa từng t vào ds vector trong RAM
+            // === FIELD BẮT BUỘC — nếu thiếu thì catch bắt, bỏ dòng này ===
+            std::getline(ss >> std::ws, temp, '|'); // Lấy được begin date
+            bg = std::stoll(temp); // Chuyển temp từ string thành ll lấy bg
+            std::getline(ss >> std::ws, name, '|'); // Lấy được tên 
+            // Dùng temp lấy dl
+            std::getline(ss >> std::ws, temp, '|'); 
+            // Chuyển về dl
+            dl = std::stoll(temp); // Chuyển temp từ string thành ll lấy dl
+            // Lọc bỏ line hỏng
+            if (dl <= 0) continue;
+
+            // === FIELD TÙY CHỌN — thiếu thì dùng giá trị mặc định ===
+            // Mỗi field bọc try riêng để field sau không bị ảnh hưởng
+            try{
+                // Dùng temp lấy prio
+                std::getline(ss >> std::ws, temp, '|');
+                psc = std::stoi(temp);
+            } catch(...){psc = 1;} // Có thì lấy ra, không có thì mặc định 1
+            try{
+                /*Đặt cứ != 0 thì là true, == 0 thì false.
+                Nếu có lúc bị lưu thành 5/0 => 5 !=0 vẫn được tính thành true, không bị bỏ qua.*/
+                std::getline(ss >> std::ws, temp, '|');
+                isD = (std::stoi(temp)) != 0; // Chuyển str thành int lấy bool
+            } catch(...) {isD = false;} // Không có thì lấy mặc định false
+            try{
+                std::getline(ss >> std::ws, temp);
+                cd = std::stoll(temp); // Chuyển str thành ll lấy cd
+            } catch(...) {cd = 0;} // Không có thì mặc định chưa có cd
+
+            // Đặt Task t để đưa thành từng Task trong ds
+            Task t;
+            t.setDataChuan(bg, name, dl, psc, isD, cd); // Đưa name và dl vào task_name và dl
+            ds.push_back(t); // đưa từng t vào ds vector trong RAM
+        }
+        catch(...){
+            // Nếu thiếu infor bắt buộc: bg, name, dl thì bỏ qua hoàn toàn
+            continue;
+        }
     }
     // Load xong hết vào RAM thì đóng file an toàn
     f.close();
+    // Đọc xong thì ẩn lại
+    hideFile(path);
     // Sắp xếp lại
     priority();
 }

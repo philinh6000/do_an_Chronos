@@ -1,0 +1,32 @@
+name: Build Chronos for macOS
+
+on:
+  push:
+    branches: [ main, master ] # Kích hoạt khi em push code lên nhánh main hoặc master
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-macos:
+    runs-on: macos-latest # Mượn con máy ảo chạy hệ điều hành macOS chính chủ của GitHub
+
+    steps:
+    - name: Checkout repository code
+      uses: actions/checkout@v4
+
+    - name: Create Build Directory
+      run: mkdir -p build
+
+    - name: Compile Chronos for Apple Silicon (M1/M2/M3)
+      run: |
+        g++ -O3 -std=c++17 main.cpp project.cpp task.cpp -target arm64-apple-macos -o build/Chronos_mac_arm64
+
+    - name: Compile Chronos for Intel Mac
+      run: |
+        g++ -O3 -std=c++17 main.cpp project.cpp task.cpp -target x86_64-apple-macos -o build/Chronos_mac_x86_64
+
+    - name: Upload Mac Binaries to GitHub Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: Chronos-macOS-Executables
+        path: build/

@@ -29,8 +29,9 @@ class Project{
         void undo();
         void Redo();
         void demoOverflow(); // demo để test 10000 task
-        void setFolder(); // Tạo đường dẫn chứa và khởi tạo folder
         void saveToFile(); // Lưu ds vào file
+        void hideFile(const std::string& path);
+        void UnhideFile(const std::string& path);
         void loadFromFile(); // Đọc ds từ file                                                                                                                   VB=
         void sleep(int s); // Gọi sleep nhanh
         // Chỉ hiển thị text thông báo -> chỉ xem

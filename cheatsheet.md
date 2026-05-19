@@ -109,3 +109,67 @@ T2: usc = 60 + 39*1 = 99 → đúng, prio cao hơn thì điểm cao hơn dù cù
 
 Khi hrsleft còn 0 → tất cả chắc chắn đạt 100."""
 ```
+
+### Cách so sánh theo ngày + uscore:
+```C++
+bool Task::operator<(const Task& other) const {
+    struct tm t1 = *localtime(&deadline);
+    time_t dl2 = other.deadline;
+    struct tm t2 = *localtime(&dl2);
+    
+    // So sánh theo ngày (bỏ qua giờ phút)
+    int day1 = t1.tm_year*10000 + t1.tm_mon*100 + t1.tm_mday;
+    int day2 = t2.tm_year*10000 + t2.tm_mon*100 + t2.tm_mday;
+    
+    if (day1 != day2) return day1 < day2;
+    return urgency_score() > other.urgency_score();
+}
+```
+
+### Cách giấu file data vào home trên Window và MAC
+```C++
+#include <cstdlib>
+
+std::string getDataPath() {
+    const char* home = std::getenv("USERPROFILE"); // Windows
+    if (!home) home = std::getenv("HOME");          // Mac/Linux
+    if (!home) return "data.chronos";               // fallback
+    return std::string(home) + "/.chronos_data";
+}
+```
+Khi cần thêm os khác thì thêm if.
+Trên Windows lưu vào C:\Users\TênUser\.chronos_data, trên Mac lưu vào /Users/TênUser/.chronos_data. File bắt đầu bằng dấu . sẽ bị ẩn trên cả hai hệ điều hành.
+
+### Cách lưu file ngay folder hiện tại
+```C++
+std::ofstream f("data.chronos"); // lưu ngay thư mục hiện tại
+```
+
+### Cách lưu file vào folder cố định:
+# 1. Tạo path và folder muốn lưu:
+```C++
+void Project::setFolder(){
+    // Khởi tạo đường dẫn
+    std::string command = "mkdir \"C:\\Users\\Public\\Chronos\" > nul 2>&1";
+    // "nul 2>&1" là để lệnh chạy ngầm, không hiện cmd lên.
+    // Trong Window, đường dẫn đúng thường là "\\".
+    // Lệnh mkdir sẽ tự bỏ qua nếu đã có folder nên không cần kiểm tra
+    system(command.c_str()); // Thực thi tạo path ở command
+}
+```
+# 2. Bắt đầu lưu ds vào file. Có thể tự đặt tên
+```C++
+void Project::saveToFile(){
+    // Đảm bảo đã có folder -> gọi hàm ở B1
+    setFolder();
+    // Ghi vào file data = ofstream, f là tên path đến data.chronos, có thể đặt tên riêng
+    std::ofstream f("C:/Users/Public/Chronos/data.chronos");
+}
+```
+# 3. Load data từ f về lại RAM khi mở Chronos
+```C++
+void Project::loadFromFile(){
+    // Dùng ifstream đọc file txt ở path
+    std::ifstream f("C:/Users/Public/Chronos/data.chronos");
+}
+```
