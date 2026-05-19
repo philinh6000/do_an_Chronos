@@ -268,16 +268,16 @@ FILE_ATTRIBUTE_HIDDEN — hằng số được định nghĩa sẵn trong window
 Nó ra lệnh cho Windows đặt thuộc tính ẩn cho file
 giống như user click chuột phải → Properties → tick "Hidden".*/
 void Project::hideFile(const std::string& path) {
-#ifdef _WIN32
-    SetFileAttributesA(path.c_str(), FILE_ATTRIBUTE_HIDDEN);
-#endif
+    #ifdef _WIN32
+        SetFileAttributesA(path.c_str(), FILE_ATTRIBUTE_HIDDEN);
+    #endif
     // Mac/Linux: file bắt đầu bằng dấu . đã tự ẩn rồi, không cần làm gì thêm
     // Chỉ bọc lại để an toàn vì MAC không có SetFileAttributesA()
 }
 // Mở ẩn file trước khi ghi để có thể thao tác trên file.
-void UnhideFile(const std::string& path){
+void Project::UnhideFile(const std::string& path){
     #ifdef _WIN32
-    SetFileAttributesA(path.c_str(), FILE_ATTRIBUTE_NORMAL);
+        SetFileAttributesA(path.c_str(), FILE_ATTRIBUTE_NORMAL);
     #endif
 }
 // 2. Bắt đầu lưu ds vào file. Có thể tự đặt tên
