@@ -1,6 +1,5 @@
 // task.cpp
 #include "task.h"
-#include <iostream>
 #include <algorithm>
 #include <iomanip> // Để dùng setfill và setw thêm số, đảm bảo định dạng 2 số cho time.
 // Xử lý mức độ ưu tiên
@@ -53,7 +52,7 @@ int Task::correct_val(const std::string &text, const int min_val, const int max_
     // Nhập text bằng cout:
     std::cout<<text;
     // Chuẩn bị kiểm tra int và kiểm tra so với now
-    int gia_tri; // tạo biến nhập time.
+    int gia_tri; // tạo biến nhập time, số vị trí, số lựa chọn trong menu
     int i = 3; // Tạo số lần được nhập
     // Khi i lớn hơn 0 thì được nhập lại nếu sai
     while (i > 0){
@@ -110,7 +109,7 @@ void Task::input_time(){
     -> deadline = -1 sau khi nhập hết -> theo hàm isValid()
     trong add_task làm cho deadline = -1 thì bỏ qua 
     -> trở về Main Menu mà không hiện thông báo gì cả.*/
-    
+  
     // Nếu năm là -1 = sai -> về menu luôn
     if (y == -1) {deadline = -1; return;}
 

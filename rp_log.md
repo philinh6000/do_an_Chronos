@@ -1,4 +1,6 @@
 ### rp_log.md
+# < 5/5/26
+Tính năng cơ bản.
 # 5/5/26 - 9/5/26:
 1. Thêm lưu file vào ổ đĩa
 2. Thêm tính năng xóa nhanh từ x -> y
