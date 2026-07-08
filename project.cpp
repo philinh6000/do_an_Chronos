@@ -3,6 +3,7 @@
 #include <iostream>
 #include <thread> // Để dùng sleep thay cho back_to_menu
 #include <chrono> // Để dùng sleep thay cho back_to_menu
+#include <limits>
 #ifdef _WIN32
     #include <windows.h> // Dùng để chạy SetFileAttributes ẩn file
 #else
@@ -90,13 +91,13 @@ void Project::update_task(){
     choose_task = t.correct_val("Chon task muon sua: ", 0, (int)ds.size()-1);
     if (choose_task == -1) sleep(2);
     if (choose_task != -1){
-        // Nếu đúng -> Lưu trước khi sửa.
-        history.push(ds);
 
         // Xử lý nếu nội dung được chọn không có trong menu
         // Chọn loại field muốn sửa:
         std::string choose_field;
         int i = 3;
+        // Tạo cờ kiểm tra thành công:
+        bool is_update = false;
         // Nếu chọn field 1
         do{
             system("cls");
@@ -104,16 +105,20 @@ void Project::update_task(){
             std::cout<<"1. Rename\n2. Sua Deadline\n3. Xac nhan da hoan thanh\n4. Gia han\n5. Xoa\n0. Back to Main Menu\n";
             std::cout<<"Chon: ";
             std::cin>>choose_field;
-            std::cin.ignore();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
+    
             if (choose_field == "0") {
                 std::cout<<"Back to Main Menu\n";
                 break;
             }
             else if (choose_field == "1") {
+                // Nếu thành công -> Lưu trước khi sửa.
+                history.push(ds);
                 std::string new_name;
                 std::cout<<"Nhap ten task moi: ";
                 std::getline(std::cin, new_name);
                 ds[choose_task].setTaskName(new_name);
+                is_update = true;
                 std::cout<<"Sua ten task thanh cong!!\n";
             }
             // Chọn 2 thì nhập deadline
@@ -125,23 +130,31 @@ void Project::update_task(){
                 // Nếu return deadline = -1 do cố tình nhập sai -> chỉ hiện thông báo
                 if (update_time.getDeadline() == -1) break; // dùng getDeadline() để lấy được deadline trả về. Chỉ cần break vì correct_val có sẵn thông báo lỗi.
                 else {// Nếu không phải -1 => sửa thành công thì mới lưu thật vào ds[choose_task]
+                    history.push(ds); // thành công thì mới lưu trạng thái trước khi sửa.
                     ds[choose_task] = update_time;
+                    is_update = true;
                     std::cout<<"Sua deadline thanh cong!!\n";
                 }
             }
             // Chọn 3 để xác nhận task đã hoàn thành
             else if (choose_field == "3") {
+                history.push(ds);
                 ds[choose_task].markAsDone();
+                is_update = true;
                 std::cout<<"Xac nhan Task: "<<choose_task<<" da hoan thanh!!!";
             }
             // Gia hạn
             else if (choose_field == "4") {
+                history.push(ds);
                 ++ds[choose_task]; // gia hạn ở vị trí được chọn
+                is_update = true;
                 std::cout<<"Gia han thanh cong!!\n";
             }
             // Xoa
             else if (choose_field == "5") {
+                history.push(ds);
                 ds.erase(ds.begin() + choose_task);
+                is_update = true;
                 std::cout<<"Xoa task thanh cong!!\n";
             }
             // Nhập ký tự khác thì return
@@ -153,10 +166,12 @@ void Project::update_task(){
         }
         // Nếu nhập linh tinh thì có 3 cơ hội
         // Nếu nhập 0 thì thoát về main menu ngay
-        while ((choose_field != "0" && choose_field !="1" && choose_field != "2" && choose_field != "3" && choose_field != "4" && choose_field != "5") && i != 0); 
-        priority(); // Sắp xếp lại
-        while (!redo.empty()) redo.pop();
-        saveToFile(); // Lưu vào ổ đĩa
+        while ((choose_field != "0" && choose_field !="1" && choose_field != "2" && choose_field != "3" && choose_field != "4" && choose_field != "5") && i != 0);
+        if (is_update){ // Nếu sửa thành công mới có sắp xếp và xóa tương lai
+            priority(); // Sắp xếp lại
+            while (!redo.empty()) redo.pop();
+            saveToFile(); // Lưu vào ổ đĩa
+        }
         sleep(2);
     }
 }
