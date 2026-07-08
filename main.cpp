@@ -1,6 +1,7 @@
 // main.cpp
 #include "project.h" // project đã gọi task.h
 #include <iostream>
+#include <limits>
 
 int main(){
     Project p; // Tạo danh sách p với class Project
@@ -19,7 +20,7 @@ int main(){
         std::cout<<"1. Them\n2. Xem Completed Task\n3. Cap nhat\n4. Xoa trong khoang duoc chon\n5. Undo\n6. Redo\n7. Demo\n8. Refresh\n0. Thoat\n";
         std::cout<<"Chon: ";
         std::cin>>choose;
-        std::cin.ignore(); // xóa enter cho lần tiếp.
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // xóa enter và toàn bộ ký tự rác nếu có cho lần tiếp.
         if (choose == "0") {
             // Lưu file an toàn rồi exit
             p.saveToFile();

@@ -105,3 +105,6 @@ Nếu là gia hạn bị tăng 3 ngày vì bấm 3 lần. Nếu bấm gia hạn 
 ## 7/7:
 1. Update thuật toán operator < so sánh giá trị tĩnh (deadline và priority_score) thay vì phải tính lại urgency_score() mỗi lần.
 2. Update correct_val ignore max ký tự rác nhập vào, tránh trường hợp ký tự rác >1000 chữ (logic ban đầu clear 1000 ký tự rác)
+
+## 9/7:
+1. Sửa lỗi main không xóa hết ký tự rác nếu gặp space: dùng std::numeric_limits<std::streamsize>::max() để đảm bảo tất cả ký tự rác đều bị bắt.
