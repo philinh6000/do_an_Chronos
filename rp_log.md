@@ -111,3 +111,4 @@ Nếu là gia hạn bị tăng 3 ngày vì bấm 3 lần. Nếu bấm gia hạn 
 2. Sửa lỗi update_deadline, khi cố tình nhập sai vẫn bị trả về deadline = -1 làm lỗi task -> tạo bản sao nhận sửa đổi update_time.input_time(), và điều kiện để lưu: nếu update_time != -1 mới lưu, còn nếu là -1 thì break luôn.
 3. Sửa lỗi không xóa hết ký tự rác nếu gặp space khi chọn menu trong update_task -> cách sửa tương tự sửa main menu.
 4. Sửa lỗi push trạng thái sớm -> đưa push trạng thái vào từng nhánh, đảm bảo hành vi được chọn thực hiện thành công mới push.history, nếu user chọn 0.exit -> trạng thái không đổi hoặc sửa deadline không thành công -> trạng thái không đổi thì không cần push history mới.
+5. Thêm cờ is_update cho update_task để đảm bảo có thay đổi trạng thái mới thực hiện sắp xếp lại, xóa redo, lưu file để tránh lãng phí tài nguyên khi không có trạng thái thay đổi.
