@@ -118,8 +118,16 @@ void Project::update_task(){
             }
             // Chọn 2 thì nhập deadline
             else if (choose_field == "2") {
-                ds[choose_task].input_time();
-                std::cout<<"Sua deadline thanh cong!!\n";
+                // Tạo bản sao nhận kết quả trước:
+                Task update_time = ds[choose_task];
+                // Dùng bản sao nhận thời gian trả về
+                update_time.input_time();
+                // Nếu return deadline = -1 do cố tình nhập sai -> chỉ hiện thông báo
+                if (update_time.getDeadline() == -1) break; // dùng getDeadline() để lấy được deadline trả về. Chỉ cần break vì correct_val có sẵn thông báo lỗi.
+                else {// Nếu không phải -1 => sửa thành công thì mới lưu thật vào ds[choose_task]
+                    ds[choose_task] = update_time;
+                    std::cout<<"Sua deadline thanh cong!!\n";
+                }
             }
             // Chọn 3 để xác nhận task đã hoàn thành
             else if (choose_field == "3") {
