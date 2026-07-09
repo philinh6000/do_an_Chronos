@@ -65,7 +65,7 @@ int Task::correct_val(const std::string &text, const int min_val, const int max_
         // Sai thì dùng cin.clear() để reset trạng thái, sẵn sàng nhận lệnh mới
         std::cin.clear();
         // Xóa dòng cin lỗi trước đó, sẵn sàng chuẩn bị nhập lại
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // dọn max ký tự rác đang có cho đến khi gặp \n
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // dọn max ký tự rác đang có cho đến khi gặp \n (enter)
         i--; // Giảm số lần được nhập
         // Gửi thông báo số lần còn được nhập lại:
         if (i > 0) std::cout<<"Thong tin khong hop le!! Con "<<i<<" lan nhap!\n"

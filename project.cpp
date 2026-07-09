@@ -194,6 +194,7 @@ void Project::erase_from_x_to_y(){
                 history.push(ds);
                 ds.erase(ds.begin() + x, ds.begin() + y + 1);
                 while (!redo.empty()) redo.pop();
+                priority();
                 saveToFile(); // Lưu vào file
                 std::cout<<"Xoa task thanh cong!!\n";
                 sleep(2);
@@ -274,6 +275,7 @@ void Project::demoOverflow(){
             t.setFakeData(i);
             ds.push_back(t);
         }
+        priority();
         saveToFile();
         std::cout<<"Tao Demo thanh cong!!\n";
         sleep(2);
@@ -320,7 +322,7 @@ void Project::saveToFile(){
     // Khi f.is_open thì ghi từng dòng của ds vào f
     if (f.is_open()) {
         // Dùng const vì chỉ xem, kiểu auto.
-        // Dùng &t tham chiếu duyệt từng dòng trong ds, không tạo bản sao.
+        // Dùng &t: tham chiếu duyệt từng dòng trong ds, không tạo bản sao.
         for (const auto &t: ds){
             // Lọc bỏ dòng data rác với deadline = -1 để an toàn
             if (!t.isValid()) continue;
