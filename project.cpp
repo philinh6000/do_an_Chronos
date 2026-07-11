@@ -344,7 +344,10 @@ void Project::loadFromFile(){
     UnhideFile(path); // bỏ ẩn để đọc
     std::ifstream f(path);
     // Nếu f chưa tồn tại -> không có gì để load
-    if (!f.is_open()) return;
+    if (!f.is_open()) {
+        hideFile(path); // ẩn file lại rồi thoát
+        return;
+    }
     // Xóa ds ở RAM hiện tại để chuẩn bị lấy ds ở f vào
     ds.clear();
     std::string line; // Tạo biến line để đọc từng hàng của f

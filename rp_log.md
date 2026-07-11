@@ -119,3 +119,8 @@ Nếu là gia hạn bị tăng 3 ngày vì bấm 3 lần. Nếu bấm gia hạn 
 
 ## 10/7
 1. Sửa lỗi thiếu sắp xếp sau khi Demo hoặc xóa from x to y -> thêm priority() sau khi thực hiện lệnh.
+
+---
+
+## 12/7
+1. Trường hợp file không open được thì return luôn, nhưng trước đó đã unhide -> fix: thêm hidefile rồi mới return.
